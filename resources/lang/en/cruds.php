@@ -302,8 +302,8 @@ return [
         ],
     ],
     'manajemenAbsensiDanLembur' => [
-        'title'          => 'Manajemen Absensi dan Lembur',
-        'title_singular' => 'Manajemen Absensi dan Lembur',
+        'title'          => 'Absensi dan Lembur',
+        'title_singular' => 'Absensi dan Lembur',
     ],
     'lembur' => [
         'title'          => 'Lembur',
