@@ -76,17 +76,6 @@
                         <span class="pull-right-container"><i class="fa fa-fw fa-angle-left pull-right"></i></span>
                     </a>
                     <ul class="treeview-menu">
-                        @can('perusahaan_access')
-                            <li class="{{ request()->is("admin/perusahaans") || request()->is("admin/perusahaans/*") ? "active" : "" }}">
-                                <a href="{{ route("admin.perusahaans.index") }}">
-                                    <i class="fa-fw far fa-building">
-
-                                    </i>
-                                    <span>{{ trans('cruds.perusahaan.title') }}</span>
-
-                                </a>
-                            </li>
-                        @endcan
                         @can('area_access')
                             <li class="{{ request()->is("admin/areas") || request()->is("admin/areas/*") ? "active" : "" }}">
                                 <a href="{{ route("admin.areas.index") }}">
@@ -94,6 +83,17 @@
 
                                     </i>
                                     <span>{{ trans('cruds.area.title') }}</span>
+
+                                </a>
+                            </li>
+                        @endcan
+                        @can('perusahaan_access')
+                            <li class="{{ request()->is("admin/perusahaans") || request()->is("admin/perusahaans/*") ? "active" : "" }}">
+                                <a href="{{ route("admin.perusahaans.index") }}">
+                                    <i class="fa-fw far fa-building">
+
+                                    </i>
+                                    <span>{{ trans('cruds.perusahaan.title') }}</span>
 
                                 </a>
                             </li>
