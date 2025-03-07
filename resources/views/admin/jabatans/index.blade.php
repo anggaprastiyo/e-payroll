@@ -7,6 +7,10 @@
                 <a class="btn btn-success" href="{{ route('admin.jabatans.create') }}">
                     {{ trans('global.add') }} {{ trans('cruds.jabatan.title_singular') }}
                 </a>
+                <button class="btn btn-warning" data-toggle="modal" data-target="#csvImportModal">
+                    {{ trans('global.app_csvImport') }}
+                </button>
+                @include('csvImport.modal', ['model' => 'Jabatan', 'route' => 'admin.jabatans.parseCsvImport'])
             </div>
         </div>
     @endcan
@@ -17,176 +21,100 @@
                     {{ trans('cruds.jabatan.title_singular') }} {{ trans('global.list') }}
                 </div>
                 <div class="panel-body">
-                    <div class="table-responsive">
-                        <table class=" table table-bordered table-striped table-hover datatable datatable-Jabatan">
-                            <thead>
-                                <tr>
-                                    <th width="10">
+                    <table class=" table table-bordered table-striped table-hover ajaxTable datatable datatable-Jabatan">
+                        <thead>
+                            <tr>
+                                <th width="10">
 
-                                    </th>
-                                    <th>
-                                        {{ trans('cruds.jabatan.fields.id') }}
-                                    </th>
-                                    <th>
-                                        {{ trans('cruds.jabatan.fields.kantor') }}
-                                    </th>
-                                    <th>
-                                        {{ trans('cruds.jabatan.fields.kode') }}
-                                    </th>
-                                    <th>
-                                        {{ trans('cruds.jabatan.fields.nama') }}
-                                    </th>
-                                    <th>
-                                        {{ trans('cruds.jabatan.fields.koefisien_tunjangan') }}
-                                    </th>
-                                    <th>
-                                        {{ trans('cruds.jabatan.fields.is_lembur_otomatis') }}
-                                    </th>
-                                    <th>
-                                        {{ trans('cruds.jabatan.fields.tujangan_kinerja') }}
-                                    </th>
-                                    <th>
-                                        {{ trans('cruds.jabatan.fields.tunjangan_komunikasi') }}
-                                    </th>
-                                    <th>
-                                        {{ trans('cruds.jabatan.fields.tunjangan_cuti') }}
-                                    </th>
-                                    <th>
-                                        {{ trans('cruds.jabatan.fields.tunjangan_pakaian') }}
-                                    </th>
-                                    <th>
-                                        {{ trans('cruds.jabatan.fields.tunjangan_jabatan') }}
-                                    </th>
-                                    <th>
-                                        {{ trans('cruds.jabatan.fields.tunjangan_kemahalan') }}
-                                    </th>
-                                    <th>
-                                        &nbsp;
-                                    </th>
-                                </tr>
-                                <tr>
-                                    <td>
-                                    </td>
-                                    <td>
-                                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                                    </td>
-                                    <td>
-                                        <select class="search">
-                                            <option value>{{ trans('global.all') }}</option>
-                                            @foreach($kantors as $key => $item)
-                                                <option value="{{ $item->nama }}">{{ $item->nama }}</option>
-                                            @endforeach
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                                    </td>
-                                    <td>
-                                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                                    </td>
-                                    <td>
-                                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                                    </td>
-                                    <td>
-                                        <select class="search" strict="true">
-                                            <option value>{{ trans('global.all') }}</option>
-                                            @foreach(App\Models\Jabatan::IS_LEMBUR_OTOMATIS_RADIO as $key => $item)
-                                                <option value="{{ $item }}">{{ $item }}</option>
-                                            @endforeach
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                                    </td>
-                                    <td>
-                                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                                    </td>
-                                    <td>
-                                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                                    </td>
-                                    <td>
-                                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                                    </td>
-                                    <td>
-                                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                                    </td>
-                                    <td>
-                                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                                    </td>
-                                    <td>
-                                    </td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($jabatans as $key => $jabatan)
-                                    <tr data-entry-id="{{ $jabatan->id }}">
-                                        <td>
-
-                                        </td>
-                                        <td>
-                                            {{ $jabatan->id ?? '' }}
-                                        </td>
-                                        <td>
-                                            {{ $jabatan->kantor->nama ?? '' }}
-                                        </td>
-                                        <td>
-                                            {{ $jabatan->kode ?? '' }}
-                                        </td>
-                                        <td>
-                                            {{ $jabatan->nama ?? '' }}
-                                        </td>
-                                        <td>
-                                            {{ $jabatan->koefisien_tunjangan ?? '' }}
-                                        </td>
-                                        <td>
-                                            {{ App\Models\Jabatan::IS_LEMBUR_OTOMATIS_RADIO[$jabatan->is_lembur_otomatis] ?? '' }}
-                                        </td>
-                                        <td>
-                                            {{ $jabatan->tujangan_kinerja ?? '' }}
-                                        </td>
-                                        <td>
-                                            {{ $jabatan->tunjangan_komunikasi ?? '' }}
-                                        </td>
-                                        <td>
-                                            {{ $jabatan->tunjangan_cuti ?? '' }}
-                                        </td>
-                                        <td>
-                                            {{ $jabatan->tunjangan_pakaian ?? '' }}
-                                        </td>
-                                        <td>
-                                            {{ $jabatan->tunjangan_jabatan ?? '' }}
-                                        </td>
-                                        <td>
-                                            {{ $jabatan->tunjangan_kemahalan ?? '' }}
-                                        </td>
-                                        <td>
-                                            @can('jabatan_show')
-                                                <a class="btn btn-xs btn-primary" href="{{ route('admin.jabatans.show', $jabatan->id) }}">
-                                                    {{ trans('global.view') }}
-                                                </a>
-                                            @endcan
-
-                                            @can('jabatan_edit')
-                                                <a class="btn btn-xs btn-info" href="{{ route('admin.jabatans.edit', $jabatan->id) }}">
-                                                    {{ trans('global.edit') }}
-                                                </a>
-                                            @endcan
-
-                                            @can('jabatan_delete')
-                                                <form action="{{ route('admin.jabatans.destroy', $jabatan->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">
-                                                    <input type="hidden" name="_method" value="DELETE">
-                                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                                    <input type="submit" class="btn btn-xs btn-danger" value="{{ trans('global.delete') }}">
-                                                </form>
-                                            @endcan
-
-                                        </td>
-
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                                </th>
+                                <th>
+                                    {{ trans('cruds.jabatan.fields.kantor') }}
+                                </th>
+                                <th>
+                                    {{ trans('cruds.jabatan.fields.kode') }}
+                                </th>
+                                <th>
+                                    {{ trans('cruds.jabatan.fields.nama') }}
+                                </th>
+                                <th>
+                                    {{ trans('cruds.jabatan.fields.koefisien_tunjangan') }}
+                                </th>
+                                <th>
+                                    {{ trans('cruds.jabatan.fields.is_lembur_otomatis') }}
+                                </th>
+                                <th>
+                                    {{ trans('cruds.jabatan.fields.tujangan_kinerja') }}
+                                </th>
+                                <th>
+                                    {{ trans('cruds.jabatan.fields.tunjangan_komunikasi') }}
+                                </th>
+                                <th>
+                                    {{ trans('cruds.jabatan.fields.tunjangan_cuti') }}
+                                </th>
+                                <th>
+                                    {{ trans('cruds.jabatan.fields.tunjangan_pakaian') }}
+                                </th>
+                                <th>
+                                    {{ trans('cruds.jabatan.fields.tunjangan_jabatan') }}
+                                </th>
+                                <th>
+                                    {{ trans('cruds.jabatan.fields.tunjangan_kemahalan') }}
+                                </th>
+                                <th>
+                                    &nbsp;
+                                </th>
+                            </tr>
+                            <tr>
+                                <td>
+                                </td>
+                                <td>
+                                    <select class="search">
+                                        <option value>{{ trans('global.all') }}</option>
+                                        @foreach($kantors as $key => $item)
+                                            <option value="{{ $item->nama }}">{{ $item->nama }}</option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td>
+                                    <input class="search" type="text" placeholder="{{ trans('global.search') }}">
+                                </td>
+                                <td>
+                                    <input class="search" type="text" placeholder="{{ trans('global.search') }}">
+                                </td>
+                                <td>
+                                    <input class="search" type="text" placeholder="{{ trans('global.search') }}">
+                                </td>
+                                <td>
+                                    <select class="search" strict="true">
+                                        <option value>{{ trans('global.all') }}</option>
+                                        @foreach(App\Models\Jabatan::IS_LEMBUR_OTOMATIS_RADIO as $key => $item)
+                                            <option value="{{ $key }}">{{ $item }}</option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td>
+                                    <input class="search" type="text" placeholder="{{ trans('global.search') }}">
+                                </td>
+                                <td>
+                                    <input class="search" type="text" placeholder="{{ trans('global.search') }}">
+                                </td>
+                                <td>
+                                    <input class="search" type="text" placeholder="{{ trans('global.search') }}">
+                                </td>
+                                <td>
+                                    <input class="search" type="text" placeholder="{{ trans('global.search') }}">
+                                </td>
+                                <td>
+                                    <input class="search" type="text" placeholder="{{ trans('global.search') }}">
+                                </td>
+                                <td>
+                                    <input class="search" type="text" placeholder="{{ trans('global.search') }}">
+                                </td>
+                                <td>
+                                </td>
+                            </tr>
+                        </thead>
+                    </table>
                 </div>
             </div>
 
@@ -202,14 +130,14 @@
     $(function () {
   let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
 @can('jabatan_delete')
-  let deleteButtonTrans = '{{ trans('global.datatables.delete') }}'
+  let deleteButtonTrans = '{{ trans('global.datatables.delete') }}';
   let deleteButton = {
     text: deleteButtonTrans,
     url: "{{ route('admin.jabatans.massDestroy') }}",
     className: 'btn-danger',
     action: function (e, dt, node, config) {
-      var ids = $.map(dt.rows({ selected: true }).nodes(), function (entry) {
-          return $(entry).data('entry-id')
+      var ids = $.map(dt.rows({ selected: true }).data(), function (entry) {
+          return entry.id
       });
 
       if (ids.length === 0) {
@@ -231,12 +159,33 @@
   dtButtons.push(deleteButton)
 @endcan
 
-  $.extend(true, $.fn.dataTable.defaults, {
+  let dtOverrideGlobals = {
+    buttons: dtButtons,
+    processing: true,
+    serverSide: true,
+    retrieve: true,
+    aaSorting: [],
+    ajax: "{{ route('admin.jabatans.index') }}",
+    columns: [
+      { data: 'placeholder', name: 'placeholder' },
+{ data: 'kantor_nama', name: 'kantor.nama' },
+{ data: 'kode', name: 'kode' },
+{ data: 'nama', name: 'nama' },
+{ data: 'koefisien_tunjangan', name: 'koefisien_tunjangan' },
+{ data: 'is_lembur_otomatis', name: 'is_lembur_otomatis' },
+{ data: 'tujangan_kinerja', name: 'tujangan_kinerja' },
+{ data: 'tunjangan_komunikasi', name: 'tunjangan_komunikasi' },
+{ data: 'tunjangan_cuti', name: 'tunjangan_cuti' },
+{ data: 'tunjangan_pakaian', name: 'tunjangan_pakaian' },
+{ data: 'tunjangan_jabatan', name: 'tunjangan_jabatan' },
+{ data: 'tunjangan_kemahalan', name: 'tunjangan_kemahalan' },
+{ data: 'actions', name: '{{ trans('global.actions') }}' }
+    ],
     orderCellsTop: true,
     order: [[ 1, 'desc' ]],
     pageLength: 100,
-  });
-  let table = $('.datatable-Jabatan:not(.ajaxTable)').DataTable({ buttons: dtButtons })
+  };
+  let table = $('.datatable-Jabatan').DataTable(dtOverrideGlobals);
   $('a[data-toggle="tab"]').on('shown.bs.tab click', function(e){
       $($.fn.dataTable.tables(true)).DataTable()
           .columns.adjust();
@@ -263,7 +212,7 @@ table.on('column-visibility.dt', function(e, settings, column, state) {
           visibleColumnsIndexes.push(colIdx);
       });
   })
-})
+});
 
 </script>
 @endsection

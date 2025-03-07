@@ -1,16 +1,16 @@
 @extends('layouts.admin')
 @section('content')
 <div class="content">
-    @can('area_create')
+    @can('user_alert_create')
         <div style="margin-bottom: 10px;" class="row">
             <div class="col-lg-12">
-                <a class="btn btn-success" href="{{ route('admin.areas.create') }}">
-                    {{ trans('global.add') }} {{ trans('cruds.area.title_singular') }}
+                <a class="btn btn-success" href="{{ route('admin.user-alerts.create') }}">
+                    {{ trans('global.add') }} {{ trans('cruds.userAlert.title_singular') }}
                 </a>
                 <button class="btn btn-warning" data-toggle="modal" data-target="#csvImportModal">
                     {{ trans('global.app_csvImport') }}
                 </button>
-                @include('csvImport.modal', ['model' => 'Area', 'route' => 'admin.areas.parseCsvImport'])
+                @include('csvImport.modal', ['model' => 'UserAlert', 'route' => 'admin.user-alerts.parseCsvImport'])
             </div>
         </div>
     @endcan
@@ -18,42 +18,33 @@
         <div class="col-lg-12">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    {{ trans('cruds.area.title_singular') }} {{ trans('global.list') }}
+                    {{ trans('cruds.userAlert.title_singular') }} {{ trans('global.list') }}
                 </div>
                 <div class="panel-body">
-                    <table class=" table table-bordered table-striped table-hover ajaxTable datatable datatable-Area">
+                    <table class=" table table-bordered table-striped table-hover ajaxTable datatable datatable-UserAlert">
                         <thead>
                             <tr>
                                 <th width="10">
 
                                 </th>
                                 <th>
-                                    {{ trans('cruds.area.fields.nama') }}
+                                    {{ trans('cruds.userAlert.fields.id') }}
                                 </th>
                                 <th>
-                                    {{ trans('cruds.area.fields.umr') }}
+                                    {{ trans('cruds.userAlert.fields.alert_text') }}
                                 </th>
                                 <th>
-                                    {{ trans('cruds.area.fields.tunjangan_kemahalan') }}
+                                    {{ trans('cruds.userAlert.fields.alert_link') }}
+                                </th>
+                                <th>
+                                    {{ trans('cruds.userAlert.fields.user') }}
+                                </th>
+                                <th>
+                                    {{ trans('cruds.userAlert.fields.created_at') }}
                                 </th>
                                 <th>
                                     &nbsp;
                                 </th>
-                            </tr>
-                            <tr>
-                                <td>
-                                </td>
-                                <td>
-                                    <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                                </td>
-                                <td>
-                                    <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                                </td>
-                                <td>
-                                    <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                                </td>
-                                <td>
-                                </td>
                             </tr>
                         </thead>
                     </table>
@@ -71,11 +62,11 @@
 <script>
     $(function () {
   let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
-@can('area_delete')
+@can('user_alert_delete')
   let deleteButtonTrans = '{{ trans('global.datatables.delete') }}';
   let deleteButton = {
     text: deleteButtonTrans,
-    url: "{{ route('admin.areas.massDestroy') }}",
+    url: "{{ route('admin.user-alerts.massDestroy') }}",
     className: 'btn-danger',
     action: function (e, dt, node, config) {
       var ids = $.map(dt.rows({ selected: true }).data(), function (entry) {
@@ -107,45 +98,26 @@
     serverSide: true,
     retrieve: true,
     aaSorting: [],
-    ajax: "{{ route('admin.areas.index') }}",
+    ajax: "{{ route('admin.user-alerts.index') }}",
     columns: [
       { data: 'placeholder', name: 'placeholder' },
-{ data: 'nama', name: 'nama' },
-{ data: 'umr', name: 'umr' },
-{ data: 'tunjangan_kemahalan', name: 'tunjangan_kemahalan' },
+{ data: 'id', name: 'id' },
+{ data: 'alert_text', name: 'alert_text' },
+{ data: 'alert_link', name: 'alert_link' },
+{ data: 'user', name: 'users.name' },
+{ data: 'created_at', name: 'created_at' },
 { data: 'actions', name: '{{ trans('global.actions') }}' }
     ],
     orderCellsTop: true,
     order: [[ 1, 'desc' ]],
     pageLength: 100,
   };
-  let table = $('.datatable-Area').DataTable(dtOverrideGlobals);
+  let table = $('.datatable-UserAlert').DataTable(dtOverrideGlobals);
   $('a[data-toggle="tab"]').on('shown.bs.tab click', function(e){
       $($.fn.dataTable.tables(true)).DataTable()
           .columns.adjust();
   });
   
-let visibleColumnsIndexes = null;
-$('.datatable thead').on('input', '.search', function () {
-      let strict = $(this).attr('strict') || false
-      let value = strict && this.value ? "^" + this.value + "$" : this.value
-
-      let index = $(this).parent().index()
-      if (visibleColumnsIndexes !== null) {
-        index = visibleColumnsIndexes[index]
-      }
-
-      table
-        .column(index)
-        .search(value, strict)
-        .draw()
-  });
-table.on('column-visibility.dt', function(e, settings, column, state) {
-      visibleColumnsIndexes = []
-      table.columns(":visible").every(function(colIdx) {
-          visibleColumnsIndexes.push(colIdx);
-      });
-  })
 });
 
 </script>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Traits\CsvImportTrait;
 use App\Http\Requests\MassDestroyAreaRequest;
 use App\Http\Requests\StoreAreaRequest;
 use App\Http\Requests\UpdateAreaRequest;
@@ -10,16 +11,54 @@ use App\Models\Area;
 use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Yajra\DataTables\Facades\DataTables;
 
 class AreaController extends Controller
 {
-    public function index()
+    use CsvImportTrait;
+
+    public function index(Request $request)
     {
         abort_if(Gate::denies('area_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $areas = Area::all();
+        if ($request->ajax()) {
+            $query = Area::query()->select(sprintf('%s.*', (new Area)->table));
+            $table = Datatables::of($query);
 
-        return view('admin.areas.index', compact('areas'));
+            $table->addColumn('placeholder', '&nbsp;');
+            $table->addColumn('actions', '&nbsp;');
+
+            $table->editColumn('actions', function ($row) {
+                $viewGate      = 'area_show';
+                $editGate      = 'area_edit';
+                $deleteGate    = 'area_delete';
+                $crudRoutePart = 'areas';
+
+                return view('partials.datatablesActions', compact(
+                    'viewGate',
+                    'editGate',
+                    'deleteGate',
+                    'crudRoutePart',
+                    'row'
+                ));
+            });
+
+            $table->editColumn('nama', function ($row) {
+                return $row->nama ? $row->nama : '';
+            });
+            $table->editColumn('umr', function ($row) {
+                return $row->umr ? $row->umr : '';
+            });
+            $table->editColumn('tunjangan_kemahalan', function ($row) {
+                return $row->tunjangan_kemahalan ? $row->tunjangan_kemahalan : '';
+            });
+
+            $table->rawColumns(['actions', 'placeholder']);
+
+            return $table->make(true);
+        }
+
+        return view('admin.areas.index');
     }
 
     public function create()

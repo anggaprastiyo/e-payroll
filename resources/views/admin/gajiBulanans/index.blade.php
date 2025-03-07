@@ -17,117 +17,62 @@
                     {{ trans('cruds.gajiBulanan.title_singular') }} {{ trans('global.list') }}
                 </div>
                 <div class="panel-body">
-                    <div class="table-responsive">
-                        <table class=" table table-bordered table-striped table-hover datatable datatable-GajiBulanan">
-                            <thead>
-                                <tr>
-                                    <th width="10">
+                    <table class=" table table-bordered table-striped table-hover ajaxTable datatable datatable-GajiBulanan">
+                        <thead>
+                            <tr>
+                                <th width="10">
 
-                                    </th>
-                                    <th>
-                                        {{ trans('cruds.gajiBulanan.fields.id') }}
-                                    </th>
-                                    <th>
-                                        {{ trans('cruds.gajiBulanan.fields.perusahaan') }}
-                                    </th>
-                                    <th>
-                                        {{ trans('cruds.gajiBulanan.fields.jenis_gaji') }}
-                                    </th>
-                                    <th>
-                                        {{ trans('cruds.gajiBulanan.fields.tanggal') }}
-                                    </th>
-                                    <th>
-                                        {{ trans('cruds.gajiBulanan.fields.status') }}
-                                    </th>
-                                    <th>
-                                        &nbsp;
-                                    </th>
-                                </tr>
-                                <tr>
-                                    <td>
-                                    </td>
-                                    <td>
-                                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                                    </td>
-                                    <td>
-                                        <select class="search">
-                                            <option value>{{ trans('global.all') }}</option>
-                                            @foreach($perusahaans as $key => $item)
-                                                <option value="{{ $item->nama }}">{{ $item->nama }}</option>
-                                            @endforeach
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <select class="search">
-                                            <option value>{{ trans('global.all') }}</option>
-                                            @foreach($jenis_gajis as $key => $item)
-                                                <option value="{{ $item->nama }}">{{ $item->nama }}</option>
-                                            @endforeach
-                                        </select>
-                                    </td>
-                                    <td>
-                                    </td>
-                                    <td>
-                                        <select class="search" strict="true">
-                                            <option value>{{ trans('global.all') }}</option>
-                                            @foreach(App\Models\GajiBulanan::STATUS_SELECT as $key => $item)
-                                                <option value="{{ $item }}">{{ $item }}</option>
-                                            @endforeach
-                                        </select>
-                                    </td>
-                                    <td>
-                                    </td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($gajiBulanans as $key => $gajiBulanan)
-                                    <tr data-entry-id="{{ $gajiBulanan->id }}">
-                                        <td>
-
-                                        </td>
-                                        <td>
-                                            {{ $gajiBulanan->id ?? '' }}
-                                        </td>
-                                        <td>
-                                            {{ $gajiBulanan->perusahaan->nama ?? '' }}
-                                        </td>
-                                        <td>
-                                            {{ $gajiBulanan->jenis_gaji->nama ?? '' }}
-                                        </td>
-                                        <td>
-                                            {{ $gajiBulanan->tanggal ?? '' }}
-                                        </td>
-                                        <td>
-                                            {{ App\Models\GajiBulanan::STATUS_SELECT[$gajiBulanan->status] ?? '' }}
-                                        </td>
-                                        <td>
-                                            @can('gaji_bulanan_show')
-                                                <a class="btn btn-xs btn-primary" href="{{ route('admin.gaji-bulanans.show', $gajiBulanan->id) }}">
-                                                    {{ trans('global.view') }}
-                                                </a>
-                                            @endcan
-
-                                            @can('gaji_bulanan_edit')
-                                                <a class="btn btn-xs btn-info" href="{{ route('admin.gaji-bulanans.edit', $gajiBulanan->id) }}">
-                                                    {{ trans('global.edit') }}
-                                                </a>
-                                            @endcan
-
-                                            @can('gaji_bulanan_delete')
-                                                <form action="{{ route('admin.gaji-bulanans.destroy', $gajiBulanan->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">
-                                                    <input type="hidden" name="_method" value="DELETE">
-                                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                                    <input type="submit" class="btn btn-xs btn-danger" value="{{ trans('global.delete') }}">
-                                                </form>
-                                            @endcan
-
-                                        </td>
-
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                                </th>
+                                <th>
+                                    {{ trans('cruds.gajiBulanan.fields.perusahaan') }}
+                                </th>
+                                <th>
+                                    {{ trans('cruds.gajiBulanan.fields.jenis_gaji') }}
+                                </th>
+                                <th>
+                                    {{ trans('cruds.gajiBulanan.fields.tanggal') }}
+                                </th>
+                                <th>
+                                    {{ trans('cruds.gajiBulanan.fields.status') }}
+                                </th>
+                                <th>
+                                    &nbsp;
+                                </th>
+                            </tr>
+                            <tr>
+                                <td>
+                                </td>
+                                <td>
+                                    <select class="search">
+                                        <option value>{{ trans('global.all') }}</option>
+                                        @foreach($perusahaans as $key => $item)
+                                            <option value="{{ $item->nama }}">{{ $item->nama }}</option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="search">
+                                        <option value>{{ trans('global.all') }}</option>
+                                        @foreach($jenis_gajis as $key => $item)
+                                            <option value="{{ $item->nama }}">{{ $item->nama }}</option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                    <select class="search" strict="true">
+                                        <option value>{{ trans('global.all') }}</option>
+                                        @foreach(App\Models\GajiBulanan::STATUS_SELECT as $key => $item)
+                                            <option value="{{ $key }}">{{ $item }}</option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td>
+                                </td>
+                            </tr>
+                        </thead>
+                    </table>
                 </div>
             </div>
 
@@ -143,14 +88,14 @@
     $(function () {
   let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
 @can('gaji_bulanan_delete')
-  let deleteButtonTrans = '{{ trans('global.datatables.delete') }}'
+  let deleteButtonTrans = '{{ trans('global.datatables.delete') }}';
   let deleteButton = {
     text: deleteButtonTrans,
     url: "{{ route('admin.gaji-bulanans.massDestroy') }}",
     className: 'btn-danger',
     action: function (e, dt, node, config) {
-      var ids = $.map(dt.rows({ selected: true }).nodes(), function (entry) {
-          return $(entry).data('entry-id')
+      var ids = $.map(dt.rows({ selected: true }).data(), function (entry) {
+          return entry.id
       });
 
       if (ids.length === 0) {
@@ -172,12 +117,26 @@
   dtButtons.push(deleteButton)
 @endcan
 
-  $.extend(true, $.fn.dataTable.defaults, {
+  let dtOverrideGlobals = {
+    buttons: dtButtons,
+    processing: true,
+    serverSide: true,
+    retrieve: true,
+    aaSorting: [],
+    ajax: "{{ route('admin.gaji-bulanans.index') }}",
+    columns: [
+      { data: 'placeholder', name: 'placeholder' },
+{ data: 'perusahaan_nama', name: 'perusahaan.nama' },
+{ data: 'jenis_gaji_nama', name: 'jenis_gaji.nama' },
+{ data: 'tanggal', name: 'tanggal' },
+{ data: 'status', name: 'status' },
+{ data: 'actions', name: '{{ trans('global.actions') }}' }
+    ],
     orderCellsTop: true,
     order: [[ 1, 'desc' ]],
     pageLength: 100,
-  });
-  let table = $('.datatable-GajiBulanan:not(.ajaxTable)').DataTable({ buttons: dtButtons })
+  };
+  let table = $('.datatable-GajiBulanan').DataTable(dtOverrideGlobals);
   $('a[data-toggle="tab"]').on('shown.bs.tab click', function(e){
       $($.fn.dataTable.tables(true)).DataTable()
           .columns.adjust();
@@ -204,7 +163,7 @@ table.on('column-visibility.dt', function(e, settings, column, state) {
           visibleColumnsIndexes.push(colIdx);
       });
   })
-})
+});
 
 </script>
 @endsection

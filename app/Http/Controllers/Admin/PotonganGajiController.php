@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Traits\CsvImportTrait;
 use App\Http\Controllers\Traits\MediaUploadingTrait;
 use App\Http\Requests\MassDestroyPotonganGajiRequest;
 use App\Http\Requests\StorePotonganGajiRequest;
@@ -15,24 +16,64 @@ use Gate;
 use Illuminate\Http\Request;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Symfony\Component\HttpFoundation\Response;
+use Yajra\DataTables\Facades\DataTables;
 
 class PotonganGajiController extends Controller
 {
-    use MediaUploadingTrait;
+    use MediaUploadingTrait, CsvImportTrait;
 
-    public function index()
+    public function index(Request $request)
     {
         abort_if(Gate::denies('potongan_gaji_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $potonganGajis = PotonganGaji::with(['user', 'rekanan', 'periode_gaji'])->get();
+        if ($request->ajax()) {
+            $query = PotonganGaji::with(['user', 'rekanan', 'periode_gaji'])->select(sprintf('%s.*', (new PotonganGaji)->table));
+            $table = Datatables::of($query);
 
-        $users = User::get();
+            $table->addColumn('placeholder', '&nbsp;');
+            $table->addColumn('actions', '&nbsp;');
 
-        $rekanans = Rekanan::get();
+            $table->editColumn('actions', function ($row) {
+                $viewGate      = 'potongan_gaji_show';
+                $editGate      = 'potongan_gaji_edit';
+                $deleteGate    = 'potongan_gaji_delete';
+                $crudRoutePart = 'potongan-gajis';
 
+                return view('partials.datatablesActions', compact(
+                    'viewGate',
+                    'editGate',
+                    'deleteGate',
+                    'crudRoutePart',
+                    'row'
+                ));
+            });
+
+            $table->addColumn('user_name', function ($row) {
+                return $row->user ? $row->user->name : '';
+            });
+
+            $table->addColumn('rekanan_nama', function ($row) {
+                return $row->rekanan ? $row->rekanan->nama : '';
+            });
+
+            $table->addColumn('periode_gaji_tanggal', function ($row) {
+                return $row->periode_gaji ? $row->periode_gaji->tanggal : '';
+            });
+
+            $table->editColumn('nominal', function ($row) {
+                return $row->nominal ? $row->nominal : '';
+            });
+
+            $table->rawColumns(['actions', 'placeholder', 'user', 'rekanan', 'periode_gaji']);
+
+            return $table->make(true);
+        }
+
+        $users         = User::get();
+        $rekanans      = Rekanan::get();
         $gaji_bulanans = GajiBulanan::get();
 
-        return view('admin.potonganGajis.index', compact('gaji_bulanans', 'potonganGajis', 'rekanans', 'users'));
+        return view('admin.potonganGajis.index', compact('users', 'rekanans', 'gaji_bulanans'));
     }
 
     public function create()

@@ -12,20 +12,90 @@ use App\Models\User;
 use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Yajra\DataTables\Facades\DataTables;
 
 class GajiBulananDetailController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         abort_if(Gate::denies('gaji_bulanan_detail_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $gajiBulananDetails = GajiBulananDetail::with(['gaji_bulanan', 'user'])->get();
+        if ($request->ajax()) {
+            $query = GajiBulananDetail::with(['gaji_bulanan', 'user'])->select(sprintf('%s.*', (new GajiBulananDetail)->table));
+            $table = Datatables::of($query);
+
+            $table->addColumn('placeholder', '&nbsp;');
+            $table->addColumn('actions', '&nbsp;');
+
+            $table->editColumn('actions', function ($row) {
+                $viewGate      = 'gaji_bulanan_detail_show';
+                $editGate      = 'gaji_bulanan_detail_edit';
+                $deleteGate    = 'gaji_bulanan_detail_delete';
+                $crudRoutePart = 'gaji-bulanan-details';
+
+                return view('partials.datatablesActions', compact(
+                    'viewGate',
+                    'editGate',
+                    'deleteGate',
+                    'crudRoutePart',
+                    'row'
+                ));
+            });
+
+            $table->addColumn('gaji_bulanan_tanggal', function ($row) {
+                return $row->gaji_bulanan ? $row->gaji_bulanan->tanggal : '';
+            });
+
+            $table->addColumn('user_name', function ($row) {
+                return $row->user ? $row->user->name : '';
+            });
+
+            $table->editColumn('gaji_pokok', function ($row) {
+                return $row->gaji_pokok ? $row->gaji_pokok : '';
+            });
+            $table->editColumn('total_tunjangan', function ($row) {
+                return $row->total_tunjangan ? $row->total_tunjangan : '';
+            });
+            $table->editColumn('total_iuran_bpjstk', function ($row) {
+                return $row->total_iuran_bpjstk ? $row->total_iuran_bpjstk : '';
+            });
+            $table->editColumn('total_iuran_bpjskes', function ($row) {
+                return $row->total_iuran_bpjskes ? $row->total_iuran_bpjskes : '';
+            });
+            $table->editColumn('total_lembur', function ($row) {
+                return $row->total_lembur ? $row->total_lembur : '';
+            });
+            $table->editColumn('total_pajak', function ($row) {
+                return $row->total_pajak ? $row->total_pajak : '';
+            });
+            $table->editColumn('total_premi_bpjstk', function ($row) {
+                return $row->total_premi_bpjstk ? $row->total_premi_bpjstk : '';
+            });
+            $table->editColumn('total_premi_bpjskes', function ($row) {
+                return $row->total_premi_bpjskes ? $row->total_premi_bpjskes : '';
+            });
+            $table->editColumn('premi_taspen_save', function ($row) {
+                return $row->premi_taspen_save ? $row->premi_taspen_save : '';
+            });
+            $table->editColumn('total_potongan_absensi', function ($row) {
+                return $row->total_potongan_absensi ? $row->total_potongan_absensi : '';
+            });
+            $table->editColumn('total_potongan_pihak_ketiga', function ($row) {
+                return $row->total_potongan_pihak_ketiga ? $row->total_potongan_pihak_ketiga : '';
+            });
+            $table->editColumn('total_thp', function ($row) {
+                return $row->total_thp ? $row->total_thp : '';
+            });
+
+            $table->rawColumns(['actions', 'placeholder', 'gaji_bulanan', 'user']);
+
+            return $table->make(true);
+        }
 
         $gaji_bulanans = GajiBulanan::get();
+        $users         = User::get();
 
-        $users = User::get();
-
-        return view('admin.gajiBulananDetails.index', compact('gajiBulananDetails', 'gaji_bulanans', 'users'));
+        return view('admin.gajiBulananDetails.index', compact('gaji_bulanans', 'users'));
     }
 
     public function create()

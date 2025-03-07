@@ -11,16 +11,55 @@ use App\Models\Perusahaan;
 use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Yajra\DataTables\Facades\DataTables;
 
 class JenisGajiController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         abort_if(Gate::denies('jenis_gaji_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $jenisGajis = JenisGaji::with(['perusahaan'])->get();
+        if ($request->ajax()) {
+            $query = JenisGaji::with(['perusahaan'])->select(sprintf('%s.*', (new JenisGaji)->table));
+            $table = Datatables::of($query);
 
-        return view('admin.jenisGajis.index', compact('jenisGajis'));
+            $table->addColumn('placeholder', '&nbsp;');
+            $table->addColumn('actions', '&nbsp;');
+
+            $table->editColumn('actions', function ($row) {
+                $viewGate      = 'jenis_gaji_show';
+                $editGate      = 'jenis_gaji_edit';
+                $deleteGate    = 'jenis_gaji_delete';
+                $crudRoutePart = 'jenis-gajis';
+
+                return view('partials.datatablesActions', compact(
+                    'viewGate',
+                    'editGate',
+                    'deleteGate',
+                    'crudRoutePart',
+                    'row'
+                ));
+            });
+
+            $table->addColumn('perusahaan_nama', function ($row) {
+                return $row->perusahaan ? $row->perusahaan->nama : '';
+            });
+
+            $table->editColumn('kode', function ($row) {
+                return $row->kode ? $row->kode : '';
+            });
+            $table->editColumn('nama', function ($row) {
+                return $row->nama ? $row->nama : '';
+            });
+
+            $table->rawColumns(['actions', 'placeholder', 'perusahaan']);
+
+            return $table->make(true);
+        }
+
+        $perusahaans = Perusahaan::get();
+
+        return view('admin.jenisGajis.index', compact('perusahaans'));
     }
 
     public function create()

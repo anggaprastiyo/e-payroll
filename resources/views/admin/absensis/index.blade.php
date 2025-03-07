@@ -7,6 +7,10 @@
                 <a class="btn btn-success" href="{{ route('admin.absensis.create') }}">
                     {{ trans('global.add') }} {{ trans('cruds.absensi.title_singular') }}
                 </a>
+                <button class="btn btn-warning" data-toggle="modal" data-target="#csvImportModal">
+                    {{ trans('global.app_csvImport') }}
+                </button>
+                @include('csvImport.modal', ['model' => 'Absensi', 'route' => 'admin.absensis.parseCsvImport'])
             </div>
         </div>
     @endcan
@@ -17,119 +21,61 @@
                     {{ trans('cruds.absensi.title_singular') }} {{ trans('global.list') }}
                 </div>
                 <div class="panel-body">
-                    <div class="table-responsive">
-                        <table class=" table table-bordered table-striped table-hover datatable datatable-Absensi">
-                            <thead>
-                                <tr>
-                                    <th width="10">
+                    <table class=" table table-bordered table-striped table-hover ajaxTable datatable datatable-Absensi">
+                        <thead>
+                            <tr>
+                                <th width="10">
 
-                                    </th>
-                                    <th>
-                                        {{ trans('cruds.absensi.fields.id') }}
-                                    </th>
-                                    <th>
-                                        {{ trans('cruds.absensi.fields.user') }}
-                                    </th>
-                                    <th>
-                                        {{ trans('cruds.absensi.fields.tanggal') }}
-                                    </th>
-                                    <th>
-                                        {{ trans('cruds.absensi.fields.jam_datang') }}
-                                    </th>
-                                    <th>
-                                        {{ trans('cruds.absensi.fields.jam_pulang') }}
-                                    </th>
-                                    <th>
-                                        {{ trans('cruds.absensi.fields.status') }}
-                                    </th>
-                                    <th>
-                                        &nbsp;
-                                    </th>
-                                </tr>
-                                <tr>
-                                    <td>
-                                    </td>
-                                    <td>
-                                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                                    </td>
-                                    <td>
-                                        <select class="search">
-                                            <option value>{{ trans('global.all') }}</option>
-                                            @foreach($users as $key => $item)
-                                                <option value="{{ $item->name }}">{{ $item->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </td>
-                                    <td>
-                                    </td>
-                                    <td>
-                                    </td>
-                                    <td>
-                                    </td>
-                                    <td>
-                                        <select class="search" strict="true">
-                                            <option value>{{ trans('global.all') }}</option>
-                                            @foreach(App\Models\Absensi::STATUS_RADIO as $key => $item)
-                                                <option value="{{ $item }}">{{ $item }}</option>
-                                            @endforeach
-                                        </select>
-                                    </td>
-                                    <td>
-                                    </td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($absensis as $key => $absensi)
-                                    <tr data-entry-id="{{ $absensi->id }}">
-                                        <td>
-
-                                        </td>
-                                        <td>
-                                            {{ $absensi->id ?? '' }}
-                                        </td>
-                                        <td>
-                                            {{ $absensi->user->name ?? '' }}
-                                        </td>
-                                        <td>
-                                            {{ $absensi->tanggal ?? '' }}
-                                        </td>
-                                        <td>
-                                            {{ $absensi->jam_datang ?? '' }}
-                                        </td>
-                                        <td>
-                                            {{ $absensi->jam_pulang ?? '' }}
-                                        </td>
-                                        <td>
-                                            {{ App\Models\Absensi::STATUS_RADIO[$absensi->status] ?? '' }}
-                                        </td>
-                                        <td>
-                                            @can('absensi_show')
-                                                <a class="btn btn-xs btn-primary" href="{{ route('admin.absensis.show', $absensi->id) }}">
-                                                    {{ trans('global.view') }}
-                                                </a>
-                                            @endcan
-
-                                            @can('absensi_edit')
-                                                <a class="btn btn-xs btn-info" href="{{ route('admin.absensis.edit', $absensi->id) }}">
-                                                    {{ trans('global.edit') }}
-                                                </a>
-                                            @endcan
-
-                                            @can('absensi_delete')
-                                                <form action="{{ route('admin.absensis.destroy', $absensi->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">
-                                                    <input type="hidden" name="_method" value="DELETE">
-                                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                                    <input type="submit" class="btn btn-xs btn-danger" value="{{ trans('global.delete') }}">
-                                                </form>
-                                            @endcan
-
-                                        </td>
-
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                                </th>
+                                <th>
+                                    {{ trans('cruds.absensi.fields.user') }}
+                                </th>
+                                <th>
+                                    {{ trans('cruds.absensi.fields.tanggal') }}
+                                </th>
+                                <th>
+                                    {{ trans('cruds.absensi.fields.jam_datang') }}
+                                </th>
+                                <th>
+                                    {{ trans('cruds.absensi.fields.jam_pulang') }}
+                                </th>
+                                <th>
+                                    {{ trans('cruds.absensi.fields.status') }}
+                                </th>
+                                <th>
+                                    &nbsp;
+                                </th>
+                            </tr>
+                            <tr>
+                                <td>
+                                </td>
+                                <td>
+                                    <select class="search">
+                                        <option value>{{ trans('global.all') }}</option>
+                                        @foreach($users as $key => $item)
+                                            <option value="{{ $item->name }}">{{ $item->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                    <select class="search" strict="true">
+                                        <option value>{{ trans('global.all') }}</option>
+                                        @foreach(App\Models\Absensi::STATUS_RADIO as $key => $item)
+                                            <option value="{{ $key }}">{{ $item }}</option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td>
+                                </td>
+                            </tr>
+                        </thead>
+                    </table>
                 </div>
             </div>
 
@@ -145,14 +91,14 @@
     $(function () {
   let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
 @can('absensi_delete')
-  let deleteButtonTrans = '{{ trans('global.datatables.delete') }}'
+  let deleteButtonTrans = '{{ trans('global.datatables.delete') }}';
   let deleteButton = {
     text: deleteButtonTrans,
     url: "{{ route('admin.absensis.massDestroy') }}",
     className: 'btn-danger',
     action: function (e, dt, node, config) {
-      var ids = $.map(dt.rows({ selected: true }).nodes(), function (entry) {
-          return $(entry).data('entry-id')
+      var ids = $.map(dt.rows({ selected: true }).data(), function (entry) {
+          return entry.id
       });
 
       if (ids.length === 0) {
@@ -174,12 +120,27 @@
   dtButtons.push(deleteButton)
 @endcan
 
-  $.extend(true, $.fn.dataTable.defaults, {
+  let dtOverrideGlobals = {
+    buttons: dtButtons,
+    processing: true,
+    serverSide: true,
+    retrieve: true,
+    aaSorting: [],
+    ajax: "{{ route('admin.absensis.index') }}",
+    columns: [
+      { data: 'placeholder', name: 'placeholder' },
+{ data: 'user_name', name: 'user.name' },
+{ data: 'tanggal', name: 'tanggal' },
+{ data: 'jam_datang', name: 'jam_datang' },
+{ data: 'jam_pulang', name: 'jam_pulang' },
+{ data: 'status', name: 'status' },
+{ data: 'actions', name: '{{ trans('global.actions') }}' }
+    ],
     orderCellsTop: true,
     order: [[ 1, 'desc' ]],
     pageLength: 100,
-  });
-  let table = $('.datatable-Absensi:not(.ajaxTable)').DataTable({ buttons: dtButtons })
+  };
+  let table = $('.datatable-Absensi').DataTable(dtOverrideGlobals);
   $('a[data-toggle="tab"]').on('shown.bs.tab click', function(e){
       $($.fn.dataTable.tables(true)).DataTable()
           .columns.adjust();
@@ -206,7 +167,7 @@ table.on('column-visibility.dt', function(e, settings, column, state) {
           visibleColumnsIndexes.push(colIdx);
       });
   })
-})
+});
 
 </script>
 @endsection

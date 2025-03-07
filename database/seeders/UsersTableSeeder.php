@@ -22,6 +22,7 @@ class UsersTableSeeder extends Seeder
                 'no_bpjstk'      => '',
                 'no_bpjskes'     => '',
                 'no_rekening'    => '',
+                'nik'            => '',
             ],
         ];
 

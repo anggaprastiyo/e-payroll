@@ -440,6 +440,22 @@ class PermissionsTableSeeder extends Seeder
             ],
             [
                 'id'    => 108,
+                'title' => 'user_alert_create',
+            ],
+            [
+                'id'    => 109,
+                'title' => 'user_alert_show',
+            ],
+            [
+                'id'    => 110,
+                'title' => 'user_alert_delete',
+            ],
+            [
+                'id'    => 111,
+                'title' => 'user_alert_access',
+            ],
+            [
+                'id'    => 112,
                 'title' => 'profile_password_edit',
             ],
         ];

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Traits\CsvImportTrait;
 use App\Http\Requests\MassDestroyPotonganAbsensiRequest;
 use App\Http\Requests\StorePotonganAbsensiRequest;
 use App\Http\Requests\UpdatePotonganAbsensiRequest;
@@ -11,16 +12,66 @@ use App\Models\PotonganAbsensi;
 use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Yajra\DataTables\Facades\DataTables;
 
 class PotonganAbsensiController extends Controller
 {
-    public function index()
+    use CsvImportTrait;
+
+    public function index(Request $request)
     {
         abort_if(Gate::denies('potongan_absensi_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $potonganAbsensis = PotonganAbsensi::with(['perusahaan'])->get();
+        if ($request->ajax()) {
+            $query = PotonganAbsensi::with(['perusahaan'])->select(sprintf('%s.*', (new PotonganAbsensi)->table));
+            $table = Datatables::of($query);
 
-        return view('admin.potonganAbsensis.index', compact('potonganAbsensis'));
+            $table->addColumn('placeholder', '&nbsp;');
+            $table->addColumn('actions', '&nbsp;');
+
+            $table->editColumn('actions', function ($row) {
+                $viewGate      = 'potongan_absensi_show';
+                $editGate      = 'potongan_absensi_edit';
+                $deleteGate    = 'potongan_absensi_delete';
+                $crudRoutePart = 'potongan-absensis';
+
+                return view('partials.datatablesActions', compact(
+                    'viewGate',
+                    'editGate',
+                    'deleteGate',
+                    'crudRoutePart',
+                    'row'
+                ));
+            });
+
+            $table->addColumn('perusahaan_nama', function ($row) {
+                return $row->perusahaan ? $row->perusahaan->nama : '';
+            });
+
+            $table->editColumn('terlambat', function ($row) {
+                return $row->terlambat ? $row->terlambat : '';
+            });
+            $table->editColumn('pulang_cepat', function ($row) {
+                return $row->pulang_cepat ? $row->pulang_cepat : '';
+            });
+            $table->editColumn('izin', function ($row) {
+                return $row->izin ? $row->izin : '';
+            });
+            $table->editColumn('sakit', function ($row) {
+                return $row->sakit ? $row->sakit : '';
+            });
+            $table->editColumn('tanpa_kabar', function ($row) {
+                return $row->tanpa_kabar ? $row->tanpa_kabar : '';
+            });
+
+            $table->rawColumns(['actions', 'placeholder', 'perusahaan']);
+
+            return $table->make(true);
+        }
+
+        $perusahaans = Perusahaan::get();
+
+        return view('admin.potonganAbsensis.index', compact('perusahaans'));
     }
 
     public function create()

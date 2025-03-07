@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Traits\CsvImportTrait;
 use App\Http\Requests\MassDestroyRefBpjRequest;
 use App\Http\Requests\StoreRefBpjRequest;
 use App\Http\Requests\UpdateRefBpjRequest;
@@ -10,16 +11,60 @@ use App\Models\RefBpj;
 use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Yajra\DataTables\Facades\DataTables;
 
 class RefBpjsController extends Controller
 {
-    public function index()
+    use CsvImportTrait;
+
+    public function index(Request $request)
     {
         abort_if(Gate::denies('ref_bpj_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $refBpjs = RefBpj::all();
+        if ($request->ajax()) {
+            $query = RefBpj::query()->select(sprintf('%s.*', (new RefBpj)->table));
+            $table = Datatables::of($query);
 
-        return view('admin.refBpjs.index', compact('refBpjs'));
+            $table->addColumn('placeholder', '&nbsp;');
+            $table->addColumn('actions', '&nbsp;');
+
+            $table->editColumn('actions', function ($row) {
+                $viewGate      = 'ref_bpj_show';
+                $editGate      = 'ref_bpj_edit';
+                $deleteGate    = 'ref_bpj_delete';
+                $crudRoutePart = 'ref-bpjs';
+
+                return view('partials.datatablesActions', compact(
+                    'viewGate',
+                    'editGate',
+                    'deleteGate',
+                    'crudRoutePart',
+                    'row'
+                ));
+            });
+
+            $table->editColumn('kode', function ($row) {
+                return $row->kode ? $row->kode : '';
+            });
+            $table->editColumn('provider', function ($row) {
+                return $row->provider ? RefBpj::PROVIDER_RADIO[$row->provider] : '';
+            });
+            $table->editColumn('nama', function ($row) {
+                return $row->nama ? $row->nama : '';
+            });
+            $table->editColumn('presentase', function ($row) {
+                return $row->presentase ? $row->presentase : '';
+            });
+            $table->editColumn('jenis_beban', function ($row) {
+                return $row->jenis_beban ? RefBpj::JENIS_BEBAN_RADIO[$row->jenis_beban] : '';
+            });
+
+            $table->rawColumns(['actions', 'placeholder']);
+
+            return $table->make(true);
+        }
+
+        return view('admin.refBpjs.index');
     }
 
     public function create()
