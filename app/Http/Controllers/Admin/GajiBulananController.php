@@ -12,20 +12,57 @@ use App\Models\Perusahaan;
 use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Yajra\DataTables\Facades\DataTables;
 
 class GajiBulananController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         abort_if(Gate::denies('gaji_bulanan_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $gajiBulanans = GajiBulanan::with(['perusahaan', 'jenis_gaji'])->get();
+        if ($request->ajax()) {
+            $query = GajiBulanan::with(['perusahaan', 'jenis_gaji'])->select(sprintf('%s.*', (new GajiBulanan)->table));
+            $table = Datatables::of($query);
+
+            $table->addColumn('placeholder', '&nbsp;');
+            $table->addColumn('actions', '&nbsp;');
+
+            $table->editColumn('actions', function ($row) {
+                $viewGate      = 'gaji_bulanan_show';
+                $editGate      = 'gaji_bulanan_edit';
+                $deleteGate    = 'gaji_bulanan_delete';
+                $crudRoutePart = 'gaji-bulanans';
+
+                return view('partials.datatablesActions', compact(
+                    'viewGate',
+                    'editGate',
+                    'deleteGate',
+                    'crudRoutePart',
+                    'row'
+                ));
+            });
+
+            $table->addColumn('perusahaan_nama', function ($row) {
+                return $row->perusahaan ? $row->perusahaan->nama : '';
+            });
+
+            $table->addColumn('jenis_gaji_nama', function ($row) {
+                return $row->jenis_gaji ? $row->jenis_gaji->nama : '';
+            });
+
+            $table->editColumn('status', function ($row) {
+                return $row->status ? GajiBulanan::STATUS_SELECT[$row->status] : '';
+            });
+
+            $table->rawColumns(['actions', 'placeholder', 'perusahaan', 'jenis_gaji']);
+
+            return $table->make(true);
+        }
 
         $perusahaans = Perusahaan::get();
-
         $jenis_gajis = JenisGaji::get();
 
-        return view('admin.gajiBulanans.index', compact('gajiBulanans', 'jenis_gajis', 'perusahaans'));
+        return view('admin.gajiBulanans.index', compact('perusahaans', 'jenis_gajis'));
     }
 
     public function create()

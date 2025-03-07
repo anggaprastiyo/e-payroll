@@ -1,9 +1,9 @@
 <div class="content">
-    @can('perusahaan_create')
+    @can('user_alert_create')
         <div style="margin-bottom: 10px;" class="row">
             <div class="col-lg-12">
-                <a class="btn btn-success" href="{{ route('admin.perusahaans.create') }}">
-                    {{ trans('global.add') }} {{ trans('cruds.perusahaan.title_singular') }}
+                <a class="btn btn-success" href="{{ route('admin.user-alerts.create') }}">
+                    {{ trans('global.add') }} {{ trans('cruds.userAlert.title_singular') }}
                 </a>
             </div>
         </div>
@@ -13,25 +13,31 @@
 
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    {{ trans('cruds.perusahaan.title_singular') }} {{ trans('global.list') }}
+                    {{ trans('cruds.userAlert.title_singular') }} {{ trans('global.list') }}
                 </div>
                 <div class="panel-body">
 
                     <div class="table-responsive">
-                        <table class=" table table-bordered table-striped table-hover datatable datatable-areaPerusahaans">
+                        <table class=" table table-bordered table-striped table-hover datatable datatable-userUserAlerts">
                             <thead>
                                 <tr>
                                     <th width="10">
 
                                     </th>
                                     <th>
-                                        {{ trans('cruds.perusahaan.fields.area') }}
+                                        {{ trans('cruds.userAlert.fields.id') }}
                                     </th>
                                     <th>
-                                        {{ trans('cruds.perusahaan.fields.nama') }}
+                                        {{ trans('cruds.userAlert.fields.alert_text') }}
                                     </th>
                                     <th>
-                                        {{ trans('cruds.perusahaan.fields.alamat') }}
+                                        {{ trans('cruds.userAlert.fields.alert_link') }}
+                                    </th>
+                                    <th>
+                                        {{ trans('cruds.userAlert.fields.user') }}
+                                    </th>
+                                    <th>
+                                        {{ trans('cruds.userAlert.fields.created_at') }}
                                     </th>
                                     <th>
                                         &nbsp;
@@ -39,35 +45,38 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($perusahaans as $key => $perusahaan)
-                                    <tr data-entry-id="{{ $perusahaan->id }}">
+                                @foreach($userAlerts as $key => $userAlert)
+                                    <tr data-entry-id="{{ $userAlert->id }}">
                                         <td>
 
                                         </td>
                                         <td>
-                                            {{ $perusahaan->area->nama ?? '' }}
+                                            {{ $userAlert->id ?? '' }}
                                         </td>
                                         <td>
-                                            {{ $perusahaan->nama ?? '' }}
+                                            {{ $userAlert->alert_text ?? '' }}
                                         </td>
                                         <td>
-                                            {{ $perusahaan->alamat ?? '' }}
+                                            {{ $userAlert->alert_link ?? '' }}
                                         </td>
                                         <td>
-                                            @can('perusahaan_show')
-                                                <a class="btn btn-xs btn-primary" href="{{ route('admin.perusahaans.show', $perusahaan->id) }}">
+                                            @foreach($userAlert->users as $key => $item)
+                                                <span class="label label-info label-many">{{ $item->name }}</span>
+                                            @endforeach
+                                        </td>
+                                        <td>
+                                            {{ $userAlert->created_at ?? '' }}
+                                        </td>
+                                        <td>
+                                            @can('user_alert_show')
+                                                <a class="btn btn-xs btn-primary" href="{{ route('admin.user-alerts.show', $userAlert->id) }}">
                                                     {{ trans('global.view') }}
                                                 </a>
                                             @endcan
 
-                                            @can('perusahaan_edit')
-                                                <a class="btn btn-xs btn-info" href="{{ route('admin.perusahaans.edit', $perusahaan->id) }}">
-                                                    {{ trans('global.edit') }}
-                                                </a>
-                                            @endcan
 
-                                            @can('perusahaan_delete')
-                                                <form action="{{ route('admin.perusahaans.destroy', $perusahaan->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">
+                                            @can('user_alert_delete')
+                                                <form action="{{ route('admin.user-alerts.destroy', $userAlert->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">
                                                     <input type="hidden" name="_method" value="DELETE">
                                                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                                     <input type="submit" class="btn btn-xs btn-danger" value="{{ trans('global.delete') }}">
@@ -93,11 +102,11 @@
 <script>
     $(function () {
   let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
-@can('perusahaan_delete')
+@can('user_alert_delete')
   let deleteButtonTrans = '{{ trans('global.datatables.delete') }}'
   let deleteButton = {
     text: deleteButtonTrans,
-    url: "{{ route('admin.perusahaans.massDestroy') }}",
+    url: "{{ route('admin.user-alerts.massDestroy') }}",
     className: 'btn-danger',
     action: function (e, dt, node, config) {
       var ids = $.map(dt.rows({ selected: true }).nodes(), function (entry) {
@@ -125,10 +134,10 @@
 
   $.extend(true, $.fn.dataTable.defaults, {
     orderCellsTop: true,
-    order: [[ 2, 'desc' ]],
+    order: [[ 1, 'desc' ]],
     pageLength: 100,
   });
-  let table = $('.datatable-areaPerusahaans:not(.ajaxTable)').DataTable({ buttons: dtButtons })
+  let table = $('.datatable-userUserAlerts:not(.ajaxTable)').DataTable({ buttons: dtButtons })
   $('a[data-toggle="tab"]').on('shown.bs.tab click', function(e){
       $($.fn.dataTable.tables(true)).DataTable()
           .columns.adjust();

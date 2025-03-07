@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Traits\CsvImportTrait;
 use App\Http\Requests\MassDestroyRekananRequest;
 use App\Http\Requests\StoreRekananRequest;
 use App\Http\Requests\UpdateRekananRequest;
@@ -12,16 +13,59 @@ use App\Models\Rekanan;
 use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Yajra\DataTables\Facades\DataTables;
 
 class RekananController extends Controller
 {
-    public function index()
+    use CsvImportTrait;
+
+    public function index(Request $request)
     {
         abort_if(Gate::denies('rekanan_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $rekanans = Rekanan::with(['perusahaan', 'area'])->get();
+        if ($request->ajax()) {
+            $query = Rekanan::with(['perusahaan', 'area'])->select(sprintf('%s.*', (new Rekanan)->table));
+            $table = Datatables::of($query);
 
-        return view('admin.rekanans.index', compact('rekanans'));
+            $table->addColumn('placeholder', '&nbsp;');
+            $table->addColumn('actions', '&nbsp;');
+
+            $table->editColumn('actions', function ($row) {
+                $viewGate      = 'rekanan_show';
+                $editGate      = 'rekanan_edit';
+                $deleteGate    = 'rekanan_delete';
+                $crudRoutePart = 'rekanans';
+
+                return view('partials.datatablesActions', compact(
+                    'viewGate',
+                    'editGate',
+                    'deleteGate',
+                    'crudRoutePart',
+                    'row'
+                ));
+            });
+
+            $table->addColumn('perusahaan_nama', function ($row) {
+                return $row->perusahaan ? $row->perusahaan->nama : '';
+            });
+
+            $table->addColumn('area_nama', function ($row) {
+                return $row->area ? $row->area->nama : '';
+            });
+
+            $table->editColumn('nama', function ($row) {
+                return $row->nama ? $row->nama : '';
+            });
+
+            $table->rawColumns(['actions', 'placeholder', 'perusahaan', 'area']);
+
+            return $table->make(true);
+        }
+
+        $perusahaans = Perusahaan::get();
+        $areas       = Area::get();
+
+        return view('admin.rekanans.index', compact('perusahaans', 'areas'));
     }
 
     public function create()

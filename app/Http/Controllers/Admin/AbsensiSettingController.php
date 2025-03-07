@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Traits\CsvImportTrait;
 use App\Http\Requests\MassDestroyAbsensiSettingRequest;
 use App\Http\Requests\StoreAbsensiSettingRequest;
 use App\Http\Requests\UpdateAbsensiSettingRequest;
@@ -11,16 +12,60 @@ use App\Models\Kantor;
 use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Yajra\DataTables\Facades\DataTables;
 
 class AbsensiSettingController extends Controller
 {
-    public function index()
+    use CsvImportTrait;
+
+    public function index(Request $request)
     {
         abort_if(Gate::denies('absensi_setting_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $absensiSettings = AbsensiSetting::with(['kantor'])->get();
+        if ($request->ajax()) {
+            $query = AbsensiSetting::with(['kantor'])->select(sprintf('%s.*', (new AbsensiSetting)->table));
+            $table = Datatables::of($query);
 
-        return view('admin.absensiSettings.index', compact('absensiSettings'));
+            $table->addColumn('placeholder', '&nbsp;');
+            $table->addColumn('actions', '&nbsp;');
+
+            $table->editColumn('actions', function ($row) {
+                $viewGate      = 'absensi_setting_show';
+                $editGate      = 'absensi_setting_edit';
+                $deleteGate    = 'absensi_setting_delete';
+                $crudRoutePart = 'absensi-settings';
+
+                return view('partials.datatablesActions', compact(
+                    'viewGate',
+                    'editGate',
+                    'deleteGate',
+                    'crudRoutePart',
+                    'row'
+                ));
+            });
+
+            $table->addColumn('kantor_nama', function ($row) {
+                return $row->kantor ? $row->kantor->nama : '';
+            });
+
+            $table->editColumn('hari', function ($row) {
+                return $row->hari ? AbsensiSetting::HARI_SELECT[$row->hari] : '';
+            });
+            $table->editColumn('jam_datang', function ($row) {
+                return $row->jam_datang ? $row->jam_datang : '';
+            });
+            $table->editColumn('jam_pulang', function ($row) {
+                return $row->jam_pulang ? $row->jam_pulang : '';
+            });
+
+            $table->rawColumns(['actions', 'placeholder', 'kantor']);
+
+            return $table->make(true);
+        }
+
+        $kantors = Kantor::get();
+
+        return view('admin.absensiSettings.index', compact('kantors'));
     }
 
     public function create()

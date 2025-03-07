@@ -52,6 +52,17 @@
                                 </a>
                             </li>
                         @endcan
+                        @can('user_alert_access')
+                            <li class="{{ request()->is("admin/user-alerts") || request()->is("admin/user-alerts/*") ? "active" : "" }}">
+                                <a href="{{ route("admin.user-alerts.index") }}">
+                                    <i class="fa-fw fas fa-bell">
+
+                                    </i>
+                                    <span>{{ trans('cruds.userAlert.title') }}</span>
+
+                                </a>
+                            </li>
+                        @endcan
                     </ul>
                 </li>
             @endcan

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Traits\CsvImportTrait;
 use App\Http\Controllers\Traits\MediaUploadingTrait;
 use App\Http\Requests\MassDestroyAbsensiRequest;
 use App\Http\Requests\StoreAbsensiRequest;
@@ -13,20 +14,60 @@ use Gate;
 use Illuminate\Http\Request;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Symfony\Component\HttpFoundation\Response;
+use Yajra\DataTables\Facades\DataTables;
 
 class AbsensiController extends Controller
 {
-    use MediaUploadingTrait;
+    use MediaUploadingTrait, CsvImportTrait;
 
-    public function index()
+    public function index(Request $request)
     {
         abort_if(Gate::denies('absensi_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $absensis = Absensi::with(['user'])->get();
+        if ($request->ajax()) {
+            $query = Absensi::with(['user'])->select(sprintf('%s.*', (new Absensi)->table));
+            $table = Datatables::of($query);
+
+            $table->addColumn('placeholder', '&nbsp;');
+            $table->addColumn('actions', '&nbsp;');
+
+            $table->editColumn('actions', function ($row) {
+                $viewGate      = 'absensi_show';
+                $editGate      = 'absensi_edit';
+                $deleteGate    = 'absensi_delete';
+                $crudRoutePart = 'absensis';
+
+                return view('partials.datatablesActions', compact(
+                    'viewGate',
+                    'editGate',
+                    'deleteGate',
+                    'crudRoutePart',
+                    'row'
+                ));
+            });
+
+            $table->addColumn('user_name', function ($row) {
+                return $row->user ? $row->user->name : '';
+            });
+
+            $table->editColumn('jam_datang', function ($row) {
+                return $row->jam_datang ? $row->jam_datang : '';
+            });
+            $table->editColumn('jam_pulang', function ($row) {
+                return $row->jam_pulang ? $row->jam_pulang : '';
+            });
+            $table->editColumn('status', function ($row) {
+                return $row->status ? Absensi::STATUS_RADIO[$row->status] : '';
+            });
+
+            $table->rawColumns(['actions', 'placeholder', 'user']);
+
+            return $table->make(true);
+        }
 
         $users = User::get();
 
-        return view('admin.absensis.index', compact('absensis', 'users'));
+        return view('admin.absensis.index', compact('users'));
     }
 
     public function create()
