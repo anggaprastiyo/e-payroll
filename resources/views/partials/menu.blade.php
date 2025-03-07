@@ -65,17 +65,6 @@
                         <span class="pull-right-container"><i class="fa fa-fw fa-angle-left pull-right"></i></span>
                     </a>
                     <ul class="treeview-menu">
-                        @can('area_access')
-                            <li class="{{ request()->is("admin/areas") || request()->is("admin/areas/*") ? "active" : "" }}">
-                                <a href="{{ route("admin.areas.index") }}">
-                                    <i class="fa-fw fas fa-map-marked-alt">
-
-                                    </i>
-                                    <span>{{ trans('cruds.area.title') }}</span>
-
-                                </a>
-                            </li>
-                        @endcan
                         @can('perusahaan_access')
                             <li class="{{ request()->is("admin/perusahaans") || request()->is("admin/perusahaans/*") ? "active" : "" }}">
                                 <a href="{{ route("admin.perusahaans.index") }}">
@@ -83,6 +72,17 @@
 
                                     </i>
                                     <span>{{ trans('cruds.perusahaan.title') }}</span>
+
+                                </a>
+                            </li>
+                        @endcan
+                        @can('area_access')
+                            <li class="{{ request()->is("admin/areas") || request()->is("admin/areas/*") ? "active" : "" }}">
+                                <a href="{{ route("admin.areas.index") }}">
+                                    <i class="fa-fw fas fa-map-marked-alt">
+
+                                    </i>
+                                    <span>{{ trans('cruds.area.title') }}</span>
 
                                 </a>
                             </li>
@@ -247,6 +247,28 @@
                         <span class="pull-right-container"><i class="fa fa-fw fa-angle-left pull-right"></i></span>
                     </a>
                     <ul class="treeview-menu">
+                        @can('gaji_bulanan_access')
+                            <li class="{{ request()->is("admin/gaji-bulanans") || request()->is("admin/gaji-bulanans/*") ? "active" : "" }}">
+                                <a href="{{ route("admin.gaji-bulanans.index") }}">
+                                    <i class="fa-fw fas fa-money-check-alt">
+
+                                    </i>
+                                    <span>{{ trans('cruds.gajiBulanan.title') }}</span>
+
+                                </a>
+                            </li>
+                        @endcan
+                        @can('gaji_bulanan_detail_access')
+                            <li class="{{ request()->is("admin/gaji-bulanan-details") || request()->is("admin/gaji-bulanan-details/*") ? "active" : "" }}">
+                                <a href="{{ route("admin.gaji-bulanan-details.index") }}">
+                                    <i class="fa-fw fas fa-money-bill-wave-alt">
+
+                                    </i>
+                                    <span>{{ trans('cruds.gajiBulananDetail.title') }}</span>
+
+                                </a>
+                            </li>
+                        @endcan
                         @can('jenis_gaji_access')
                             <li class="{{ request()->is("admin/jenis-gajis") || request()->is("admin/jenis-gajis/*") ? "active" : "" }}">
                                 <a href="{{ route("admin.jenis-gajis.index") }}">
@@ -276,28 +298,6 @@
 
                                     </i>
                                     <span>{{ trans('cruds.potonganGaji.title') }}</span>
-
-                                </a>
-                            </li>
-                        @endcan
-                        @can('gaji_bulanan_access')
-                            <li class="{{ request()->is("admin/gaji-bulanans") || request()->is("admin/gaji-bulanans/*") ? "active" : "" }}">
-                                <a href="{{ route("admin.gaji-bulanans.index") }}">
-                                    <i class="fa-fw fas fa-money-check-alt">
-
-                                    </i>
-                                    <span>{{ trans('cruds.gajiBulanan.title') }}</span>
-
-                                </a>
-                            </li>
-                        @endcan
-                        @can('gaji_bulanan_detail_access')
-                            <li class="{{ request()->is("admin/gaji-bulanan-details") || request()->is("admin/gaji-bulanan-details/*") ? "active" : "" }}">
-                                <a href="{{ route("admin.gaji-bulanan-details.index") }}">
-                                    <i class="fa-fw fas fa-money-bill-wave-alt">
-
-                                    </i>
-                                    <span>{{ trans('cruds.gajiBulananDetail.title') }}</span>
 
                                 </a>
                             </li>
