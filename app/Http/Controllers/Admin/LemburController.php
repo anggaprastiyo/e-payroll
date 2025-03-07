@@ -13,63 +13,20 @@ use Gate;
 use Illuminate\Http\Request;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Symfony\Component\HttpFoundation\Response;
-use Yajra\DataTables\Facades\DataTables;
 
 class LemburController extends Controller
 {
     use MediaUploadingTrait;
 
-    public function index(Request $request)
+    public function index()
     {
         abort_if(Gate::denies('lembur_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        if ($request->ajax()) {
-            $query = Lembur::with(['user'])->select(sprintf('%s.*', (new Lembur)->table));
-            $table = Datatables::of($query);
-
-            $table->addColumn('placeholder', '&nbsp;');
-            $table->addColumn('actions', '&nbsp;');
-
-            $table->editColumn('actions', function ($row) {
-                $viewGate      = 'lembur_show';
-                $editGate      = 'lembur_edit';
-                $deleteGate    = 'lembur_delete';
-                $crudRoutePart = 'lemburs';
-
-                return view('partials.datatablesActions', compact(
-                    'viewGate',
-                    'editGate',
-                    'deleteGate',
-                    'crudRoutePart',
-                    'row'
-                ));
-            });
-
-            $table->editColumn('id', function ($row) {
-                return $row->id ? $row->id : '';
-            });
-            $table->addColumn('user_name', function ($row) {
-                return $row->user ? $row->user->name : '';
-            });
-
-            $table->editColumn('jam_mulai', function ($row) {
-                return $row->jam_mulai ? $row->jam_mulai : '';
-            });
-            $table->editColumn('jam_akhir', function ($row) {
-                return $row->jam_akhir ? $row->jam_akhir : '';
-            });
-            $table->editColumn('status', function ($row) {
-                return $row->status ? Lembur::STATUS_SELECT[$row->status] : '';
-            });
-
-            $table->rawColumns(['actions', 'placeholder', 'user']);
-
-            return $table->make(true);
-        }
+        $lemburs = Lembur::with(['user'])->get();
 
         $users = User::get();
 
-        return view('admin.lemburs.index', compact('users'));
+        return view('admin.lemburs.index', compact('lemburs', 'users'));
     }
 
     public function create()

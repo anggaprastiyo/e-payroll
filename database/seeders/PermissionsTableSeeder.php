@@ -420,6 +420,26 @@ class PermissionsTableSeeder extends Seeder
             ],
             [
                 'id'    => 103,
+                'title' => 'gaji_bulanan_detail_create',
+            ],
+            [
+                'id'    => 104,
+                'title' => 'gaji_bulanan_detail_edit',
+            ],
+            [
+                'id'    => 105,
+                'title' => 'gaji_bulanan_detail_show',
+            ],
+            [
+                'id'    => 106,
+                'title' => 'gaji_bulanan_detail_delete',
+            ],
+            [
+                'id'    => 107,
+                'title' => 'gaji_bulanan_detail_access',
+            ],
+            [
+                'id'    => 108,
                 'title' => 'profile_password_edit',
             ],
         ];

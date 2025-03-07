@@ -97,6 +97,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     // Gaji Bulanan
     Route::delete('gaji-bulanans/destroy', 'GajiBulananController@massDestroy')->name('gaji-bulanans.massDestroy');
     Route::resource('gaji-bulanans', 'GajiBulananController');
+
+    // Gaji Bulanan Detail
+    Route::delete('gaji-bulanan-details/destroy', 'GajiBulananDetailController@massDestroy')->name('gaji-bulanan-details.massDestroy');
+    Route::resource('gaji-bulanan-details', 'GajiBulananDetailController');
 });
 Route::group(['prefix' => 'profile', 'as' => 'profile.', 'namespace' => 'Auth', 'middleware' => ['auth']], function () {
     // Change password

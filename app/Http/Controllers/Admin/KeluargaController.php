@@ -11,65 +11,18 @@ use App\Models\User;
 use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Yajra\DataTables\Facades\DataTables;
 
 class KeluargaController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
         abort_if(Gate::denies('keluarga_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        if ($request->ajax()) {
-            $query = Keluarga::with(['user'])->select(sprintf('%s.*', (new Keluarga)->table));
-            $table = Datatables::of($query);
-
-            $table->addColumn('placeholder', '&nbsp;');
-            $table->addColumn('actions', '&nbsp;');
-
-            $table->editColumn('actions', function ($row) {
-                $viewGate      = 'keluarga_show';
-                $editGate      = 'keluarga_edit';
-                $deleteGate    = 'keluarga_delete';
-                $crudRoutePart = 'keluargas';
-
-                return view('partials.datatablesActions', compact(
-                    'viewGate',
-                    'editGate',
-                    'deleteGate',
-                    'crudRoutePart',
-                    'row'
-                ));
-            });
-
-            $table->editColumn('id', function ($row) {
-                return $row->id ? $row->id : '';
-            });
-            $table->addColumn('user_name', function ($row) {
-                return $row->user ? $row->user->name : '';
-            });
-
-            $table->editColumn('nama', function ($row) {
-                return $row->nama ? $row->nama : '';
-            });
-            $table->editColumn('hubungan_keluarga', function ($row) {
-                return $row->hubungan_keluarga ? Keluarga::HUBUNGAN_KELUARGA_SELECT[$row->hubungan_keluarga] : '';
-            });
-            $table->editColumn('jenis_kelamin', function ($row) {
-                return $row->jenis_kelamin ? Keluarga::JENIS_KELAMIN_RADIO[$row->jenis_kelamin] : '';
-            });
-
-            $table->editColumn('no_ktp', function ($row) {
-                return $row->no_ktp ? $row->no_ktp : '';
-            });
-
-            $table->rawColumns(['actions', 'placeholder', 'user']);
-
-            return $table->make(true);
-        }
+        $keluargas = Keluarga::with(['user'])->get();
 
         $users = User::get();
 
-        return view('admin.keluargas.index', compact('users'));
+        return view('admin.keluargas.index', compact('keluargas', 'users'));
     }
 
     public function create()

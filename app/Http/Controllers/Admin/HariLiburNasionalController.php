@@ -11,51 +11,16 @@ use App\Models\Perusahaan;
 use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Yajra\DataTables\Facades\DataTables;
 
 class HariLiburNasionalController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
         abort_if(Gate::denies('hari_libur_nasional_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        if ($request->ajax()) {
-            $query = HariLiburNasional::with(['perusahaan'])->select(sprintf('%s.*', (new HariLiburNasional)->table));
-            $table = Datatables::of($query);
+        $hariLiburNasionals = HariLiburNasional::with(['perusahaan'])->get();
 
-            $table->addColumn('placeholder', '&nbsp;');
-            $table->addColumn('actions', '&nbsp;');
-
-            $table->editColumn('actions', function ($row) {
-                $viewGate      = 'hari_libur_nasional_show';
-                $editGate      = 'hari_libur_nasional_edit';
-                $deleteGate    = 'hari_libur_nasional_delete';
-                $crudRoutePart = 'hari-libur-nasionals';
-
-                return view('partials.datatablesActions', compact(
-                    'viewGate',
-                    'editGate',
-                    'deleteGate',
-                    'crudRoutePart',
-                    'row'
-                ));
-            });
-
-            $table->editColumn('id', function ($row) {
-                return $row->id ? $row->id : '';
-            });
-            $table->addColumn('perusahaan_nama', function ($row) {
-                return $row->perusahaan ? $row->perusahaan->nama : '';
-            });
-
-            $table->rawColumns(['actions', 'placeholder', 'perusahaan']);
-
-            return $table->make(true);
-        }
-
-        $perusahaans = Perusahaan::get();
-
-        return view('admin.hariLiburNasionals.index', compact('perusahaans'));
+        return view('admin.hariLiburNasionals.index', compact('hariLiburNasionals'));
     }
 
     public function create()

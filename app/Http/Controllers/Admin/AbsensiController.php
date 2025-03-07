@@ -13,63 +13,20 @@ use Gate;
 use Illuminate\Http\Request;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Symfony\Component\HttpFoundation\Response;
-use Yajra\DataTables\Facades\DataTables;
 
 class AbsensiController extends Controller
 {
     use MediaUploadingTrait;
 
-    public function index(Request $request)
+    public function index()
     {
         abort_if(Gate::denies('absensi_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        if ($request->ajax()) {
-            $query = Absensi::with(['user'])->select(sprintf('%s.*', (new Absensi)->table));
-            $table = Datatables::of($query);
-
-            $table->addColumn('placeholder', '&nbsp;');
-            $table->addColumn('actions', '&nbsp;');
-
-            $table->editColumn('actions', function ($row) {
-                $viewGate      = 'absensi_show';
-                $editGate      = 'absensi_edit';
-                $deleteGate    = 'absensi_delete';
-                $crudRoutePart = 'absensis';
-
-                return view('partials.datatablesActions', compact(
-                    'viewGate',
-                    'editGate',
-                    'deleteGate',
-                    'crudRoutePart',
-                    'row'
-                ));
-            });
-
-            $table->editColumn('id', function ($row) {
-                return $row->id ? $row->id : '';
-            });
-            $table->addColumn('user_name', function ($row) {
-                return $row->user ? $row->user->name : '';
-            });
-
-            $table->editColumn('jam_datang', function ($row) {
-                return $row->jam_datang ? $row->jam_datang : '';
-            });
-            $table->editColumn('jam_pulang', function ($row) {
-                return $row->jam_pulang ? $row->jam_pulang : '';
-            });
-            $table->editColumn('status', function ($row) {
-                return $row->status ? Absensi::STATUS_RADIO[$row->status] : '';
-            });
-
-            $table->rawColumns(['actions', 'placeholder', 'user']);
-
-            return $table->make(true);
-        }
+        $absensis = Absensi::with(['user'])->get();
 
         $users = User::get();
 
-        return view('admin.absensis.index', compact('users'));
+        return view('admin.absensis.index', compact('absensis', 'users'));
     }
 
     public function create()

@@ -12,76 +12,20 @@ use App\Models\User;
 use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Yajra\DataTables\Facades\DataTables;
 
 class UsersController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
         abort_if(Gate::denies('user_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        if ($request->ajax()) {
-            $query = User::with(['roles', 'jabatan'])->select(sprintf('%s.*', (new User)->table));
-            $table = Datatables::of($query);
+        $users = User::with(['roles', 'jabatan'])->get();
 
-            $table->addColumn('placeholder', '&nbsp;');
-            $table->addColumn('actions', '&nbsp;');
+        $roles = Role::get();
 
-            $table->editColumn('actions', function ($row) {
-                $viewGate      = 'user_show';
-                $editGate      = 'user_edit';
-                $deleteGate    = 'user_delete';
-                $crudRoutePart = 'users';
-
-                return view('partials.datatablesActions', compact(
-                    'viewGate',
-                    'editGate',
-                    'deleteGate',
-                    'crudRoutePart',
-                    'row'
-                ));
-            });
-
-            $table->editColumn('id', function ($row) {
-                return $row->id ? $row->id : '';
-            });
-            $table->editColumn('name', function ($row) {
-                return $row->name ? $row->name : '';
-            });
-            $table->editColumn('email', function ($row) {
-                return $row->email ? $row->email : '';
-            });
-            $table->editColumn('roles', function ($row) {
-                $labels = [];
-                foreach ($row->roles as $role) {
-                    $labels[] = sprintf('<span class="label label-info label-many">%s</span>', $role->title);
-                }
-
-                return implode(' ', $labels);
-            });
-            $table->addColumn('jabatan_nama', function ($row) {
-                return $row->jabatan ? $row->jabatan->nama : '';
-            });
-
-            $table->editColumn('jenis_pegawai', function ($row) {
-                return $row->jenis_pegawai ? User::JENIS_PEGAWAI_RADIO[$row->jenis_pegawai] : '';
-            });
-            $table->editColumn('jenis_kelamin', function ($row) {
-                return $row->jenis_kelamin ? User::JENIS_KELAMIN_RADIO[$row->jenis_kelamin] : '';
-            });
-            $table->editColumn('no_ktp', function ($row) {
-                return $row->no_ktp ? $row->no_ktp : '';
-            });
-
-            $table->rawColumns(['actions', 'placeholder', 'roles', 'jabatan']);
-
-            return $table->make(true);
-        }
-
-        $roles    = Role::get();
         $jabatans = Jabatan::get();
 
-        return view('admin.users.index', compact('roles', 'jabatans'));
+        return view('admin.users.index', compact('jabatans', 'roles', 'users'));
     }
 
     public function create()

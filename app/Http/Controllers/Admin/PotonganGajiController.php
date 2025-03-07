@@ -15,67 +15,24 @@ use Gate;
 use Illuminate\Http\Request;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Symfony\Component\HttpFoundation\Response;
-use Yajra\DataTables\Facades\DataTables;
 
 class PotonganGajiController extends Controller
 {
     use MediaUploadingTrait;
 
-    public function index(Request $request)
+    public function index()
     {
         abort_if(Gate::denies('potongan_gaji_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        if ($request->ajax()) {
-            $query = PotonganGaji::with(['user', 'rekanan', 'periode_gaji'])->select(sprintf('%s.*', (new PotonganGaji)->table));
-            $table = Datatables::of($query);
+        $potonganGajis = PotonganGaji::with(['user', 'rekanan', 'periode_gaji'])->get();
 
-            $table->addColumn('placeholder', '&nbsp;');
-            $table->addColumn('actions', '&nbsp;');
+        $users = User::get();
 
-            $table->editColumn('actions', function ($row) {
-                $viewGate      = 'potongan_gaji_show';
-                $editGate      = 'potongan_gaji_edit';
-                $deleteGate    = 'potongan_gaji_delete';
-                $crudRoutePart = 'potongan-gajis';
+        $rekanans = Rekanan::get();
 
-                return view('partials.datatablesActions', compact(
-                    'viewGate',
-                    'editGate',
-                    'deleteGate',
-                    'crudRoutePart',
-                    'row'
-                ));
-            });
-
-            $table->editColumn('id', function ($row) {
-                return $row->id ? $row->id : '';
-            });
-            $table->addColumn('user_name', function ($row) {
-                return $row->user ? $row->user->name : '';
-            });
-
-            $table->addColumn('rekanan_nama', function ($row) {
-                return $row->rekanan ? $row->rekanan->nama : '';
-            });
-
-            $table->addColumn('periode_gaji_tanggal', function ($row) {
-                return $row->periode_gaji ? $row->periode_gaji->tanggal : '';
-            });
-
-            $table->editColumn('nominal', function ($row) {
-                return $row->nominal ? $row->nominal : '';
-            });
-
-            $table->rawColumns(['actions', 'placeholder', 'user', 'rekanan', 'periode_gaji']);
-
-            return $table->make(true);
-        }
-
-        $users         = User::get();
-        $rekanans      = Rekanan::get();
         $gaji_bulanans = GajiBulanan::get();
 
-        return view('admin.potonganGajis.index', compact('users', 'rekanans', 'gaji_bulanans'));
+        return view('admin.potonganGajis.index', compact('gaji_bulanans', 'potonganGajis', 'rekanans', 'users'));
     }
 
     public function create()

@@ -1,77 +1,82 @@
 @extends('layouts.admin')
 @section('content')
+<div class="content">
 
-<div class="card">
-    <div class="card-header">
-        {{ trans('global.create') }} {{ trans('cruds.potonganGaji.title_singular') }}
-    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    {{ trans('global.create') }} {{ trans('cruds.potonganGaji.title_singular') }}
+                </div>
+                <div class="panel-body">
+                    <form method="POST" action="{{ route("admin.potongan-gajis.store") }}" enctype="multipart/form-data">
+                        @csrf
+                        <div class="form-group {{ $errors->has('user') ? 'has-error' : '' }}">
+                            <label class="required" for="user_id">{{ trans('cruds.potonganGaji.fields.user') }}</label>
+                            <select class="form-control select2" name="user_id" id="user_id" required>
+                                @foreach($users as $id => $entry)
+                                    <option value="{{ $id }}" {{ old('user_id') == $id ? 'selected' : '' }}>{{ $entry }}</option>
+                                @endforeach
+                            </select>
+                            @if($errors->has('user'))
+                                <span class="help-block" role="alert">{{ $errors->first('user') }}</span>
+                            @endif
+                            <span class="help-block">{{ trans('cruds.potonganGaji.fields.user_helper') }}</span>
+                        </div>
+                        <div class="form-group {{ $errors->has('rekanan') ? 'has-error' : '' }}">
+                            <label class="required" for="rekanan_id">{{ trans('cruds.potonganGaji.fields.rekanan') }}</label>
+                            <select class="form-control select2" name="rekanan_id" id="rekanan_id" required>
+                                @foreach($rekanans as $id => $entry)
+                                    <option value="{{ $id }}" {{ old('rekanan_id') == $id ? 'selected' : '' }}>{{ $entry }}</option>
+                                @endforeach
+                            </select>
+                            @if($errors->has('rekanan'))
+                                <span class="help-block" role="alert">{{ $errors->first('rekanan') }}</span>
+                            @endif
+                            <span class="help-block">{{ trans('cruds.potonganGaji.fields.rekanan_helper') }}</span>
+                        </div>
+                        <div class="form-group {{ $errors->has('periode_gaji') ? 'has-error' : '' }}">
+                            <label class="required" for="periode_gaji_id">{{ trans('cruds.potonganGaji.fields.periode_gaji') }}</label>
+                            <select class="form-control select2" name="periode_gaji_id" id="periode_gaji_id" required>
+                                @foreach($periode_gajis as $id => $entry)
+                                    <option value="{{ $id }}" {{ old('periode_gaji_id') == $id ? 'selected' : '' }}>{{ $entry }}</option>
+                                @endforeach
+                            </select>
+                            @if($errors->has('periode_gaji'))
+                                <span class="help-block" role="alert">{{ $errors->first('periode_gaji') }}</span>
+                            @endif
+                            <span class="help-block">{{ trans('cruds.potonganGaji.fields.periode_gaji_helper') }}</span>
+                        </div>
+                        <div class="form-group {{ $errors->has('keterangan') ? 'has-error' : '' }}">
+                            <label for="keterangan">{{ trans('cruds.potonganGaji.fields.keterangan') }}</label>
+                            <textarea class="form-control ckeditor" name="keterangan" id="keterangan">{!! old('keterangan') !!}</textarea>
+                            @if($errors->has('keterangan'))
+                                <span class="help-block" role="alert">{{ $errors->first('keterangan') }}</span>
+                            @endif
+                            <span class="help-block">{{ trans('cruds.potonganGaji.fields.keterangan_helper') }}</span>
+                        </div>
+                        <div class="form-group {{ $errors->has('nominal') ? 'has-error' : '' }}">
+                            <label class="required" for="nominal">{{ trans('cruds.potonganGaji.fields.nominal') }}</label>
+                            <input class="form-control" type="number" name="nominal" id="nominal" value="{{ old('nominal', '') }}" step="0.01" required>
+                            @if($errors->has('nominal'))
+                                <span class="help-block" role="alert">{{ $errors->first('nominal') }}</span>
+                            @endif
+                            <span class="help-block">{{ trans('cruds.potonganGaji.fields.nominal_helper') }}</span>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-danger" type="submit">
+                                {{ trans('global.save') }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
-    <div class="card-body">
-        <form method="POST" action="{{ route("admin.potongan-gajis.store") }}" enctype="multipart/form-data">
-            @csrf
-            <div class="form-group">
-                <label class="required" for="user_id">{{ trans('cruds.potonganGaji.fields.user') }}</label>
-                <select class="form-control select2 {{ $errors->has('user') ? 'is-invalid' : '' }}" name="user_id" id="user_id" required>
-                    @foreach($users as $id => $entry)
-                        <option value="{{ $id }}" {{ old('user_id') == $id ? 'selected' : '' }}>{{ $entry }}</option>
-                    @endforeach
-                </select>
-                @if($errors->has('user'))
-                    <span class="text-danger">{{ $errors->first('user') }}</span>
-                @endif
-                <span class="help-block">{{ trans('cruds.potonganGaji.fields.user_helper') }}</span>
-            </div>
-            <div class="form-group">
-                <label class="required" for="rekanan_id">{{ trans('cruds.potonganGaji.fields.rekanan') }}</label>
-                <select class="form-control select2 {{ $errors->has('rekanan') ? 'is-invalid' : '' }}" name="rekanan_id" id="rekanan_id" required>
-                    @foreach($rekanans as $id => $entry)
-                        <option value="{{ $id }}" {{ old('rekanan_id') == $id ? 'selected' : '' }}>{{ $entry }}</option>
-                    @endforeach
-                </select>
-                @if($errors->has('rekanan'))
-                    <span class="text-danger">{{ $errors->first('rekanan') }}</span>
-                @endif
-                <span class="help-block">{{ trans('cruds.potonganGaji.fields.rekanan_helper') }}</span>
-            </div>
-            <div class="form-group">
-                <label class="required" for="periode_gaji_id">{{ trans('cruds.potonganGaji.fields.periode_gaji') }}</label>
-                <select class="form-control select2 {{ $errors->has('periode_gaji') ? 'is-invalid' : '' }}" name="periode_gaji_id" id="periode_gaji_id" required>
-                    @foreach($periode_gajis as $id => $entry)
-                        <option value="{{ $id }}" {{ old('periode_gaji_id') == $id ? 'selected' : '' }}>{{ $entry }}</option>
-                    @endforeach
-                </select>
-                @if($errors->has('periode_gaji'))
-                    <span class="text-danger">{{ $errors->first('periode_gaji') }}</span>
-                @endif
-                <span class="help-block">{{ trans('cruds.potonganGaji.fields.periode_gaji_helper') }}</span>
-            </div>
-            <div class="form-group">
-                <label for="keterangan">{{ trans('cruds.potonganGaji.fields.keterangan') }}</label>
-                <textarea class="form-control ckeditor {{ $errors->has('keterangan') ? 'is-invalid' : '' }}" name="keterangan" id="keterangan">{!! old('keterangan') !!}</textarea>
-                @if($errors->has('keterangan'))
-                    <span class="text-danger">{{ $errors->first('keterangan') }}</span>
-                @endif
-                <span class="help-block">{{ trans('cruds.potonganGaji.fields.keterangan_helper') }}</span>
-            </div>
-            <div class="form-group">
-                <label class="required" for="nominal">{{ trans('cruds.potonganGaji.fields.nominal') }}</label>
-                <input class="form-control {{ $errors->has('nominal') ? 'is-invalid' : '' }}" type="number" name="nominal" id="nominal" value="{{ old('nominal', '') }}" step="0.01" required>
-                @if($errors->has('nominal'))
-                    <span class="text-danger">{{ $errors->first('nominal') }}</span>
-                @endif
-                <span class="help-block">{{ trans('cruds.potonganGaji.fields.nominal_helper') }}</span>
-            </div>
-            <div class="form-group">
-                <button class="btn btn-danger" type="submit">
-                    {{ trans('global.save') }}
-                </button>
-            </div>
-        </form>
+
+
+        </div>
     </div>
 </div>
-
-
-
 @endsection
 
 @section('scripts')
