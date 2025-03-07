@@ -12,63 +12,16 @@ use App\Models\Perusahaan;
 use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Yajra\DataTables\Facades\DataTables;
 
 class KantorController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
         abort_if(Gate::denies('kantor_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        if ($request->ajax()) {
-            $query = Kantor::with(['perusahaan', 'area'])->select(sprintf('%s.*', (new Kantor)->table));
-            $table = Datatables::of($query);
+        $kantors = Kantor::with(['perusahaan', 'area'])->get();
 
-            $table->addColumn('placeholder', '&nbsp;');
-            $table->addColumn('actions', '&nbsp;');
-
-            $table->editColumn('actions', function ($row) {
-                $viewGate      = 'kantor_show';
-                $editGate      = 'kantor_edit';
-                $deleteGate    = 'kantor_delete';
-                $crudRoutePart = 'kantors';
-
-                return view('partials.datatablesActions', compact(
-                    'viewGate',
-                    'editGate',
-                    'deleteGate',
-                    'crudRoutePart',
-                    'row'
-                ));
-            });
-
-            $table->editColumn('id', function ($row) {
-                return $row->id ? $row->id : '';
-            });
-            $table->addColumn('perusahaan_nama', function ($row) {
-                return $row->perusahaan ? $row->perusahaan->nama : '';
-            });
-
-            $table->addColumn('area_nama', function ($row) {
-                return $row->area ? $row->area->nama : '';
-            });
-
-            $table->editColumn('nama', function ($row) {
-                return $row->nama ? $row->nama : '';
-            });
-            $table->editColumn('alamat', function ($row) {
-                return $row->alamat ? $row->alamat : '';
-            });
-
-            $table->rawColumns(['actions', 'placeholder', 'perusahaan', 'area']);
-
-            return $table->make(true);
-        }
-
-        $perusahaans = Perusahaan::get();
-        $areas       = Area::get();
-
-        return view('admin.kantors.index', compact('perusahaans', 'areas'));
+        return view('admin.kantors.index', compact('kantors'));
     }
 
     public function create()

@@ -11,58 +11,16 @@ use App\Models\Perusahaan;
 use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Yajra\DataTables\Facades\DataTables;
 
 class PerusahaanController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
         abort_if(Gate::denies('perusahaan_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        if ($request->ajax()) {
-            $query = Perusahaan::with(['area'])->select(sprintf('%s.*', (new Perusahaan)->table));
-            $table = Datatables::of($query);
+        $perusahaans = Perusahaan::with(['area'])->get();
 
-            $table->addColumn('placeholder', '&nbsp;');
-            $table->addColumn('actions', '&nbsp;');
-
-            $table->editColumn('actions', function ($row) {
-                $viewGate      = 'perusahaan_show';
-                $editGate      = 'perusahaan_edit';
-                $deleteGate    = 'perusahaan_delete';
-                $crudRoutePart = 'perusahaans';
-
-                return view('partials.datatablesActions', compact(
-                    'viewGate',
-                    'editGate',
-                    'deleteGate',
-                    'crudRoutePart',
-                    'row'
-                ));
-            });
-
-            $table->editColumn('id', function ($row) {
-                return $row->id ? $row->id : '';
-            });
-            $table->addColumn('area_nama', function ($row) {
-                return $row->area ? $row->area->nama : '';
-            });
-
-            $table->editColumn('nama', function ($row) {
-                return $row->nama ? $row->nama : '';
-            });
-            $table->editColumn('alamat', function ($row) {
-                return $row->alamat ? $row->alamat : '';
-            });
-
-            $table->rawColumns(['actions', 'placeholder', 'area']);
-
-            return $table->make(true);
-        }
-
-        $areas = Area::get();
-
-        return view('admin.perusahaans.index', compact('areas'));
+        return view('admin.perusahaans.index', compact('perusahaans'));
     }
 
     public function create()

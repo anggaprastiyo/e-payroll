@@ -1,4 +1,4 @@
-<div class="m-3">
+<div class="content">
     @can('perusahaan_create')
         <div style="margin-bottom: 10px;" class="row">
             <div class="col-lg-12">
@@ -8,82 +8,89 @@
             </div>
         </div>
     @endcan
-    <div class="card">
-        <div class="card-header">
-            {{ trans('cruds.perusahaan.title_singular') }} {{ trans('global.list') }}
-        </div>
+    <div class="row">
+        <div class="col-lg-12">
 
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class=" table table-bordered table-striped table-hover datatable datatable-areaPerusahaans">
-                    <thead>
-                        <tr>
-                            <th width="10">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    {{ trans('cruds.perusahaan.title_singular') }} {{ trans('global.list') }}
+                </div>
+                <div class="panel-body">
 
-                            </th>
-                            <th>
-                                {{ trans('cruds.perusahaan.fields.id') }}
-                            </th>
-                            <th>
-                                {{ trans('cruds.perusahaan.fields.area') }}
-                            </th>
-                            <th>
-                                {{ trans('cruds.perusahaan.fields.nama') }}
-                            </th>
-                            <th>
-                                {{ trans('cruds.perusahaan.fields.alamat') }}
-                            </th>
-                            <th>
-                                &nbsp;
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($perusahaans as $key => $perusahaan)
-                            <tr data-entry-id="{{ $perusahaan->id }}">
-                                <td>
+                    <div class="table-responsive">
+                        <table class=" table table-bordered table-striped table-hover datatable datatable-areaPerusahaans">
+                            <thead>
+                                <tr>
+                                    <th width="10">
 
-                                </td>
-                                <td>
-                                    {{ $perusahaan->id ?? '' }}
-                                </td>
-                                <td>
-                                    {{ $perusahaan->area->nama ?? '' }}
-                                </td>
-                                <td>
-                                    {{ $perusahaan->nama ?? '' }}
-                                </td>
-                                <td>
-                                    {{ $perusahaan->alamat ?? '' }}
-                                </td>
-                                <td>
-                                    @can('perusahaan_show')
-                                        <a class="btn btn-xs btn-primary" href="{{ route('admin.perusahaans.show', $perusahaan->id) }}">
-                                            {{ trans('global.view') }}
-                                        </a>
-                                    @endcan
+                                    </th>
+                                    <th>
+                                        {{ trans('cruds.perusahaan.fields.id') }}
+                                    </th>
+                                    <th>
+                                        {{ trans('cruds.perusahaan.fields.area') }}
+                                    </th>
+                                    <th>
+                                        {{ trans('cruds.perusahaan.fields.nama') }}
+                                    </th>
+                                    <th>
+                                        {{ trans('cruds.perusahaan.fields.alamat') }}
+                                    </th>
+                                    <th>
+                                        &nbsp;
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($perusahaans as $key => $perusahaan)
+                                    <tr data-entry-id="{{ $perusahaan->id }}">
+                                        <td>
 
-                                    @can('perusahaan_edit')
-                                        <a class="btn btn-xs btn-info" href="{{ route('admin.perusahaans.edit', $perusahaan->id) }}">
-                                            {{ trans('global.edit') }}
-                                        </a>
-                                    @endcan
+                                        </td>
+                                        <td>
+                                            {{ $perusahaan->id ?? '' }}
+                                        </td>
+                                        <td>
+                                            {{ $perusahaan->area->nama ?? '' }}
+                                        </td>
+                                        <td>
+                                            {{ $perusahaan->nama ?? '' }}
+                                        </td>
+                                        <td>
+                                            {{ $perusahaan->alamat ?? '' }}
+                                        </td>
+                                        <td>
+                                            @can('perusahaan_show')
+                                                <a class="btn btn-xs btn-primary" href="{{ route('admin.perusahaans.show', $perusahaan->id) }}">
+                                                    {{ trans('global.view') }}
+                                                </a>
+                                            @endcan
 
-                                    @can('perusahaan_delete')
-                                        <form action="{{ route('admin.perusahaans.destroy', $perusahaan->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">
-                                            <input type="hidden" name="_method" value="DELETE">
-                                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                            <input type="submit" class="btn btn-xs btn-danger" value="{{ trans('global.delete') }}">
-                                        </form>
-                                    @endcan
+                                            @can('perusahaan_edit')
+                                                <a class="btn btn-xs btn-info" href="{{ route('admin.perusahaans.edit', $perusahaan->id) }}">
+                                                    {{ trans('global.edit') }}
+                                                </a>
+                                            @endcan
 
-                                </td>
+                                            @can('perusahaan_delete')
+                                                <form action="{{ route('admin.perusahaans.destroy', $perusahaan->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">
+                                                    <input type="hidden" name="_method" value="DELETE">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                                    <input type="submit" class="btn btn-xs btn-danger" value="{{ trans('global.delete') }}">
+                                                </form>
+                                            @endcan
 
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                                        </td>
+
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
             </div>
+
         </div>
     </div>
 </div>

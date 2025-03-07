@@ -11,58 +11,16 @@ use App\Models\Perusahaan;
 use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Yajra\DataTables\Facades\DataTables;
 
 class JenisGajiController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
         abort_if(Gate::denies('jenis_gaji_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        if ($request->ajax()) {
-            $query = JenisGaji::with(['perusahaan'])->select(sprintf('%s.*', (new JenisGaji)->table));
-            $table = Datatables::of($query);
+        $jenisGajis = JenisGaji::with(['perusahaan'])->get();
 
-            $table->addColumn('placeholder', '&nbsp;');
-            $table->addColumn('actions', '&nbsp;');
-
-            $table->editColumn('actions', function ($row) {
-                $viewGate      = 'jenis_gaji_show';
-                $editGate      = 'jenis_gaji_edit';
-                $deleteGate    = 'jenis_gaji_delete';
-                $crudRoutePart = 'jenis-gajis';
-
-                return view('partials.datatablesActions', compact(
-                    'viewGate',
-                    'editGate',
-                    'deleteGate',
-                    'crudRoutePart',
-                    'row'
-                ));
-            });
-
-            $table->editColumn('id', function ($row) {
-                return $row->id ? $row->id : '';
-            });
-            $table->addColumn('perusahaan_nama', function ($row) {
-                return $row->perusahaan ? $row->perusahaan->nama : '';
-            });
-
-            $table->editColumn('kode', function ($row) {
-                return $row->kode ? $row->kode : '';
-            });
-            $table->editColumn('nama', function ($row) {
-                return $row->nama ? $row->nama : '';
-            });
-
-            $table->rawColumns(['actions', 'placeholder', 'perusahaan']);
-
-            return $table->make(true);
-        }
-
-        $perusahaans = Perusahaan::get();
-
-        return view('admin.jenisGajis.index', compact('perusahaans'));
+        return view('admin.jenisGajis.index', compact('jenisGajis'));
     }
 
     public function create()

@@ -1,116 +1,184 @@
 @extends('layouts.admin')
 @section('content')
-@can('user_create')
-    <div style="margin-bottom: 10px;" class="row">
+<div class="content">
+    @can('user_create')
+        <div style="margin-bottom: 10px;" class="row">
+            <div class="col-lg-12">
+                <a class="btn btn-success" href="{{ route('admin.users.create') }}">
+                    {{ trans('global.add') }} {{ trans('cruds.user.title_singular') }}
+                </a>
+            </div>
+        </div>
+    @endcan
+    <div class="row">
         <div class="col-lg-12">
-            <a class="btn btn-success" href="{{ route('admin.users.create') }}">
-                {{ trans('global.add') }} {{ trans('cruds.user.title_singular') }}
-            </a>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    {{ trans('cruds.user.title_singular') }} {{ trans('global.list') }}
+                </div>
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table class=" table table-bordered table-striped table-hover datatable datatable-User">
+                            <thead>
+                                <tr>
+                                    <th width="10">
+
+                                    </th>
+                                    <th>
+                                        {{ trans('cruds.user.fields.id') }}
+                                    </th>
+                                    <th>
+                                        {{ trans('cruds.user.fields.name') }}
+                                    </th>
+                                    <th>
+                                        {{ trans('cruds.user.fields.email') }}
+                                    </th>
+                                    <th>
+                                        {{ trans('cruds.user.fields.roles') }}
+                                    </th>
+                                    <th>
+                                        {{ trans('cruds.user.fields.jabatan') }}
+                                    </th>
+                                    <th>
+                                        {{ trans('cruds.user.fields.jenis_pegawai') }}
+                                    </th>
+                                    <th>
+                                        {{ trans('cruds.user.fields.jenis_kelamin') }}
+                                    </th>
+                                    <th>
+                                        {{ trans('cruds.user.fields.no_ktp') }}
+                                    </th>
+                                    <th>
+                                        {{ trans('cruds.user.fields.tmt_masuk') }}
+                                    </th>
+                                    <th>
+                                        &nbsp;
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                    </td>
+                                    <td>
+                                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
+                                    </td>
+                                    <td>
+                                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
+                                    </td>
+                                    <td>
+                                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
+                                    </td>
+                                    <td>
+                                        <select class="search">
+                                            <option value>{{ trans('global.all') }}</option>
+                                            @foreach($roles as $key => $item)
+                                                <option value="{{ $item->title }}">{{ $item->title }}</option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select class="search">
+                                            <option value>{{ trans('global.all') }}</option>
+                                            @foreach($jabatans as $key => $item)
+                                                <option value="{{ $item->nama }}">{{ $item->nama }}</option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select class="search" strict="true">
+                                            <option value>{{ trans('global.all') }}</option>
+                                            @foreach(App\Models\User::JENIS_PEGAWAI_RADIO as $key => $item)
+                                                <option value="{{ $item }}">{{ $item }}</option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select class="search" strict="true">
+                                            <option value>{{ trans('global.all') }}</option>
+                                            @foreach(App\Models\User::JENIS_KELAMIN_RADIO as $key => $item)
+                                                <option value="{{ $item }}">{{ $item }}</option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
+                                    </td>
+                                    <td>
+                                    </td>
+                                    <td>
+                                    </td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($users as $key => $user)
+                                    <tr data-entry-id="{{ $user->id }}">
+                                        <td>
+
+                                        </td>
+                                        <td>
+                                            {{ $user->id ?? '' }}
+                                        </td>
+                                        <td>
+                                            {{ $user->name ?? '' }}
+                                        </td>
+                                        <td>
+                                            {{ $user->email ?? '' }}
+                                        </td>
+                                        <td>
+                                            @foreach($user->roles as $key => $item)
+                                                <span class="label label-info label-many">{{ $item->title }}</span>
+                                            @endforeach
+                                        </td>
+                                        <td>
+                                            {{ $user->jabatan->nama ?? '' }}
+                                        </td>
+                                        <td>
+                                            {{ App\Models\User::JENIS_PEGAWAI_RADIO[$user->jenis_pegawai] ?? '' }}
+                                        </td>
+                                        <td>
+                                            {{ App\Models\User::JENIS_KELAMIN_RADIO[$user->jenis_kelamin] ?? '' }}
+                                        </td>
+                                        <td>
+                                            {{ $user->no_ktp ?? '' }}
+                                        </td>
+                                        <td>
+                                            {{ $user->tmt_masuk ?? '' }}
+                                        </td>
+                                        <td>
+                                            @can('user_show')
+                                                <a class="btn btn-xs btn-primary" href="{{ route('admin.users.show', $user->id) }}">
+                                                    {{ trans('global.view') }}
+                                                </a>
+                                            @endcan
+
+                                            @can('user_edit')
+                                                <a class="btn btn-xs btn-info" href="{{ route('admin.users.edit', $user->id) }}">
+                                                    {{ trans('global.edit') }}
+                                                </a>
+                                            @endcan
+
+                                            @can('user_delete')
+                                                <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">
+                                                    <input type="hidden" name="_method" value="DELETE">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                                    <input type="submit" class="btn btn-xs btn-danger" value="{{ trans('global.delete') }}">
+                                                </form>
+                                            @endcan
+
+                                        </td>
+
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+
         </div>
     </div>
-@endcan
-<div class="card">
-    <div class="card-header">
-        {{ trans('cruds.user.title_singular') }} {{ trans('global.list') }}
-    </div>
-
-    <div class="card-body">
-        <table class=" table table-bordered table-striped table-hover ajaxTable datatable datatable-User">
-            <thead>
-                <tr>
-                    <th width="10">
-
-                    </th>
-                    <th>
-                        {{ trans('cruds.user.fields.id') }}
-                    </th>
-                    <th>
-                        {{ trans('cruds.user.fields.name') }}
-                    </th>
-                    <th>
-                        {{ trans('cruds.user.fields.email') }}
-                    </th>
-                    <th>
-                        {{ trans('cruds.user.fields.roles') }}
-                    </th>
-                    <th>
-                        {{ trans('cruds.user.fields.jabatan') }}
-                    </th>
-                    <th>
-                        {{ trans('cruds.user.fields.jenis_pegawai') }}
-                    </th>
-                    <th>
-                        {{ trans('cruds.user.fields.jenis_kelamin') }}
-                    </th>
-                    <th>
-                        {{ trans('cruds.user.fields.no_ktp') }}
-                    </th>
-                    <th>
-                        {{ trans('cruds.user.fields.tmt_masuk') }}
-                    </th>
-                    <th>
-                        &nbsp;
-                    </th>
-                </tr>
-                <tr>
-                    <td>
-                    </td>
-                    <td>
-                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                    </td>
-                    <td>
-                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                    </td>
-                    <td>
-                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                    </td>
-                    <td>
-                        <select class="search">
-                            <option value>{{ trans('global.all') }}</option>
-                            @foreach($roles as $key => $item)
-                                <option value="{{ $item->title }}">{{ $item->title }}</option>
-                            @endforeach
-                        </select>
-                    </td>
-                    <td>
-                        <select class="search">
-                            <option value>{{ trans('global.all') }}</option>
-                            @foreach($jabatans as $key => $item)
-                                <option value="{{ $item->nama }}">{{ $item->nama }}</option>
-                            @endforeach
-                        </select>
-                    </td>
-                    <td>
-                        <select class="search" strict="true">
-                            <option value>{{ trans('global.all') }}</option>
-                            @foreach(App\Models\User::JENIS_PEGAWAI_RADIO as $key => $item)
-                                <option value="{{ $key }}">{{ $item }}</option>
-                            @endforeach
-                        </select>
-                    </td>
-                    <td>
-                        <select class="search" strict="true">
-                            <option value>{{ trans('global.all') }}</option>
-                            @foreach(App\Models\User::JENIS_KELAMIN_RADIO as $key => $item)
-                                <option value="{{ $key }}">{{ $item }}</option>
-                            @endforeach
-                        </select>
-                    </td>
-                    <td>
-                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                    </td>
-                    <td>
-                    </td>
-                    <td>
-                    </td>
-                </tr>
-            </thead>
-        </table>
-    </div>
 </div>
-
-
-
 @endsection
 @section('scripts')
 @parent
@@ -118,14 +186,14 @@
     $(function () {
   let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
 @can('user_delete')
-  let deleteButtonTrans = '{{ trans('global.datatables.delete') }}';
+  let deleteButtonTrans = '{{ trans('global.datatables.delete') }}'
   let deleteButton = {
     text: deleteButtonTrans,
     url: "{{ route('admin.users.massDestroy') }}",
     className: 'btn-danger',
     action: function (e, dt, node, config) {
-      var ids = $.map(dt.rows({ selected: true }).data(), function (entry) {
-          return entry.id
+      var ids = $.map(dt.rows({ selected: true }).nodes(), function (entry) {
+          return $(entry).data('entry-id')
       });
 
       if (ids.length === 0) {
@@ -147,31 +215,12 @@
   dtButtons.push(deleteButton)
 @endcan
 
-  let dtOverrideGlobals = {
-    buttons: dtButtons,
-    processing: true,
-    serverSide: true,
-    retrieve: true,
-    aaSorting: [],
-    ajax: "{{ route('admin.users.index') }}",
-    columns: [
-      { data: 'placeholder', name: 'placeholder' },
-{ data: 'id', name: 'id' },
-{ data: 'name', name: 'name' },
-{ data: 'email', name: 'email' },
-{ data: 'roles', name: 'roles.title' },
-{ data: 'jabatan_nama', name: 'jabatan.nama' },
-{ data: 'jenis_pegawai', name: 'jenis_pegawai' },
-{ data: 'jenis_kelamin', name: 'jenis_kelamin' },
-{ data: 'no_ktp', name: 'no_ktp' },
-{ data: 'tmt_masuk', name: 'tmt_masuk' },
-{ data: 'actions', name: '{{ trans('global.actions') }}' }
-    ],
+  $.extend(true, $.fn.dataTable.defaults, {
     orderCellsTop: true,
     order: [[ 1, 'desc' ]],
     pageLength: 100,
-  };
-  let table = $('.datatable-User').DataTable(dtOverrideGlobals);
+  });
+  let table = $('.datatable-User:not(.ajaxTable)').DataTable({ buttons: dtButtons })
   $('a[data-toggle="tab"]').on('shown.bs.tab click', function(e){
       $($.fn.dataTable.tables(true)).DataTable()
           .columns.adjust();
@@ -198,7 +247,7 @@ table.on('column-visibility.dt', function(e, settings, column, state) {
           visibleColumnsIndexes.push(colIdx);
       });
   })
-});
+})
 
 </script>
 @endsection

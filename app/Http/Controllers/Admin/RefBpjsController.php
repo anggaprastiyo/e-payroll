@@ -10,61 +10,16 @@ use App\Models\RefBpj;
 use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Yajra\DataTables\Facades\DataTables;
 
 class RefBpjsController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
         abort_if(Gate::denies('ref_bpj_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        if ($request->ajax()) {
-            $query = RefBpj::query()->select(sprintf('%s.*', (new RefBpj)->table));
-            $table = Datatables::of($query);
+        $refBpjs = RefBpj::all();
 
-            $table->addColumn('placeholder', '&nbsp;');
-            $table->addColumn('actions', '&nbsp;');
-
-            $table->editColumn('actions', function ($row) {
-                $viewGate      = 'ref_bpj_show';
-                $editGate      = 'ref_bpj_edit';
-                $deleteGate    = 'ref_bpj_delete';
-                $crudRoutePart = 'ref-bpjs';
-
-                return view('partials.datatablesActions', compact(
-                    'viewGate',
-                    'editGate',
-                    'deleteGate',
-                    'crudRoutePart',
-                    'row'
-                ));
-            });
-
-            $table->editColumn('id', function ($row) {
-                return $row->id ? $row->id : '';
-            });
-            $table->editColumn('kode', function ($row) {
-                return $row->kode ? $row->kode : '';
-            });
-            $table->editColumn('provider', function ($row) {
-                return $row->provider ? RefBpj::PROVIDER_RADIO[$row->provider] : '';
-            });
-            $table->editColumn('nama', function ($row) {
-                return $row->nama ? $row->nama : '';
-            });
-            $table->editColumn('presentase', function ($row) {
-                return $row->presentase ? $row->presentase : '';
-            });
-            $table->editColumn('jenis_beban', function ($row) {
-                return $row->jenis_beban ? RefBpj::JENIS_BEBAN_RADIO[$row->jenis_beban] : '';
-            });
-
-            $table->rawColumns(['actions', 'placeholder']);
-
-            return $table->make(true);
-        }
-
-        return view('admin.refBpjs.index');
+        return view('admin.refBpjs.index', compact('refBpjs'));
     }
 
     public function create()

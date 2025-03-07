@@ -1,88 +1,142 @@
 @extends('layouts.admin')
 @section('content')
-@can('potongan_gaji_create')
-    <div style="margin-bottom: 10px;" class="row">
+<div class="content">
+    @can('potongan_gaji_create')
+        <div style="margin-bottom: 10px;" class="row">
+            <div class="col-lg-12">
+                <a class="btn btn-success" href="{{ route('admin.potongan-gajis.create') }}">
+                    {{ trans('global.add') }} {{ trans('cruds.potonganGaji.title_singular') }}
+                </a>
+            </div>
+        </div>
+    @endcan
+    <div class="row">
         <div class="col-lg-12">
-            <a class="btn btn-success" href="{{ route('admin.potongan-gajis.create') }}">
-                {{ trans('global.add') }} {{ trans('cruds.potonganGaji.title_singular') }}
-            </a>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    {{ trans('cruds.potonganGaji.title_singular') }} {{ trans('global.list') }}
+                </div>
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table class=" table table-bordered table-striped table-hover datatable datatable-PotonganGaji">
+                            <thead>
+                                <tr>
+                                    <th width="10">
+
+                                    </th>
+                                    <th>
+                                        {{ trans('cruds.potonganGaji.fields.id') }}
+                                    </th>
+                                    <th>
+                                        {{ trans('cruds.potonganGaji.fields.user') }}
+                                    </th>
+                                    <th>
+                                        {{ trans('cruds.potonganGaji.fields.rekanan') }}
+                                    </th>
+                                    <th>
+                                        {{ trans('cruds.potonganGaji.fields.periode_gaji') }}
+                                    </th>
+                                    <th>
+                                        {{ trans('cruds.potonganGaji.fields.nominal') }}
+                                    </th>
+                                    <th>
+                                        &nbsp;
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                    </td>
+                                    <td>
+                                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
+                                    </td>
+                                    <td>
+                                        <select class="search">
+                                            <option value>{{ trans('global.all') }}</option>
+                                            @foreach($users as $key => $item)
+                                                <option value="{{ $item->name }}">{{ $item->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select class="search">
+                                            <option value>{{ trans('global.all') }}</option>
+                                            @foreach($rekanans as $key => $item)
+                                                <option value="{{ $item->nama }}">{{ $item->nama }}</option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select class="search">
+                                            <option value>{{ trans('global.all') }}</option>
+                                            @foreach($gaji_bulanans as $key => $item)
+                                                <option value="{{ $item->tanggal }}">{{ $item->tanggal }}</option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
+                                    </td>
+                                    <td>
+                                    </td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($potonganGajis as $key => $potonganGaji)
+                                    <tr data-entry-id="{{ $potonganGaji->id }}">
+                                        <td>
+
+                                        </td>
+                                        <td>
+                                            {{ $potonganGaji->id ?? '' }}
+                                        </td>
+                                        <td>
+                                            {{ $potonganGaji->user->name ?? '' }}
+                                        </td>
+                                        <td>
+                                            {{ $potonganGaji->rekanan->nama ?? '' }}
+                                        </td>
+                                        <td>
+                                            {{ $potonganGaji->periode_gaji->tanggal ?? '' }}
+                                        </td>
+                                        <td>
+                                            {{ $potonganGaji->nominal ?? '' }}
+                                        </td>
+                                        <td>
+                                            @can('potongan_gaji_show')
+                                                <a class="btn btn-xs btn-primary" href="{{ route('admin.potongan-gajis.show', $potonganGaji->id) }}">
+                                                    {{ trans('global.view') }}
+                                                </a>
+                                            @endcan
+
+                                            @can('potongan_gaji_edit')
+                                                <a class="btn btn-xs btn-info" href="{{ route('admin.potongan-gajis.edit', $potonganGaji->id) }}">
+                                                    {{ trans('global.edit') }}
+                                                </a>
+                                            @endcan
+
+                                            @can('potongan_gaji_delete')
+                                                <form action="{{ route('admin.potongan-gajis.destroy', $potonganGaji->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">
+                                                    <input type="hidden" name="_method" value="DELETE">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                                    <input type="submit" class="btn btn-xs btn-danger" value="{{ trans('global.delete') }}">
+                                                </form>
+                                            @endcan
+
+                                        </td>
+
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+
         </div>
     </div>
-@endcan
-<div class="card">
-    <div class="card-header">
-        {{ trans('cruds.potonganGaji.title_singular') }} {{ trans('global.list') }}
-    </div>
-
-    <div class="card-body">
-        <table class=" table table-bordered table-striped table-hover ajaxTable datatable datatable-PotonganGaji">
-            <thead>
-                <tr>
-                    <th width="10">
-
-                    </th>
-                    <th>
-                        {{ trans('cruds.potonganGaji.fields.id') }}
-                    </th>
-                    <th>
-                        {{ trans('cruds.potonganGaji.fields.user') }}
-                    </th>
-                    <th>
-                        {{ trans('cruds.potonganGaji.fields.rekanan') }}
-                    </th>
-                    <th>
-                        {{ trans('cruds.potonganGaji.fields.periode_gaji') }}
-                    </th>
-                    <th>
-                        {{ trans('cruds.potonganGaji.fields.nominal') }}
-                    </th>
-                    <th>
-                        &nbsp;
-                    </th>
-                </tr>
-                <tr>
-                    <td>
-                    </td>
-                    <td>
-                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                    </td>
-                    <td>
-                        <select class="search">
-                            <option value>{{ trans('global.all') }}</option>
-                            @foreach($users as $key => $item)
-                                <option value="{{ $item->name }}">{{ $item->name }}</option>
-                            @endforeach
-                        </select>
-                    </td>
-                    <td>
-                        <select class="search">
-                            <option value>{{ trans('global.all') }}</option>
-                            @foreach($rekanans as $key => $item)
-                                <option value="{{ $item->nama }}">{{ $item->nama }}</option>
-                            @endforeach
-                        </select>
-                    </td>
-                    <td>
-                        <select class="search">
-                            <option value>{{ trans('global.all') }}</option>
-                            @foreach($gaji_bulanans as $key => $item)
-                                <option value="{{ $item->tanggal }}">{{ $item->tanggal }}</option>
-                            @endforeach
-                        </select>
-                    </td>
-                    <td>
-                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                    </td>
-                    <td>
-                    </td>
-                </tr>
-            </thead>
-        </table>
-    </div>
 </div>
-
-
-
 @endsection
 @section('scripts')
 @parent
@@ -90,14 +144,14 @@
     $(function () {
   let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
 @can('potongan_gaji_delete')
-  let deleteButtonTrans = '{{ trans('global.datatables.delete') }}';
+  let deleteButtonTrans = '{{ trans('global.datatables.delete') }}'
   let deleteButton = {
     text: deleteButtonTrans,
     url: "{{ route('admin.potongan-gajis.massDestroy') }}",
     className: 'btn-danger',
     action: function (e, dt, node, config) {
-      var ids = $.map(dt.rows({ selected: true }).data(), function (entry) {
-          return entry.id
+      var ids = $.map(dt.rows({ selected: true }).nodes(), function (entry) {
+          return $(entry).data('entry-id')
       });
 
       if (ids.length === 0) {
@@ -119,27 +173,12 @@
   dtButtons.push(deleteButton)
 @endcan
 
-  let dtOverrideGlobals = {
-    buttons: dtButtons,
-    processing: true,
-    serverSide: true,
-    retrieve: true,
-    aaSorting: [],
-    ajax: "{{ route('admin.potongan-gajis.index') }}",
-    columns: [
-      { data: 'placeholder', name: 'placeholder' },
-{ data: 'id', name: 'id' },
-{ data: 'user_name', name: 'user.name' },
-{ data: 'rekanan_nama', name: 'rekanan.nama' },
-{ data: 'periode_gaji_tanggal', name: 'periode_gaji.tanggal' },
-{ data: 'nominal', name: 'nominal' },
-{ data: 'actions', name: '{{ trans('global.actions') }}' }
-    ],
+  $.extend(true, $.fn.dataTable.defaults, {
     orderCellsTop: true,
     order: [[ 1, 'desc' ]],
     pageLength: 100,
-  };
-  let table = $('.datatable-PotonganGaji').DataTable(dtOverrideGlobals);
+  });
+  let table = $('.datatable-PotonganGaji:not(.ajaxTable)').DataTable({ buttons: dtButtons })
   $('a[data-toggle="tab"]').on('shown.bs.tab click', function(e){
       $($.fn.dataTable.tables(true)).DataTable()
           .columns.adjust();
@@ -166,7 +205,7 @@ table.on('column-visibility.dt', function(e, settings, column, state) {
           visibleColumnsIndexes.push(colIdx);
       });
   })
-});
+})
 
 </script>
 @endsection

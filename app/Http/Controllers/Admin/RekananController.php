@@ -12,60 +12,16 @@ use App\Models\Rekanan;
 use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Yajra\DataTables\Facades\DataTables;
 
 class RekananController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
         abort_if(Gate::denies('rekanan_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        if ($request->ajax()) {
-            $query = Rekanan::with(['perusahaan', 'area'])->select(sprintf('%s.*', (new Rekanan)->table));
-            $table = Datatables::of($query);
+        $rekanans = Rekanan::with(['perusahaan', 'area'])->get();
 
-            $table->addColumn('placeholder', '&nbsp;');
-            $table->addColumn('actions', '&nbsp;');
-
-            $table->editColumn('actions', function ($row) {
-                $viewGate      = 'rekanan_show';
-                $editGate      = 'rekanan_edit';
-                $deleteGate    = 'rekanan_delete';
-                $crudRoutePart = 'rekanans';
-
-                return view('partials.datatablesActions', compact(
-                    'viewGate',
-                    'editGate',
-                    'deleteGate',
-                    'crudRoutePart',
-                    'row'
-                ));
-            });
-
-            $table->editColumn('id', function ($row) {
-                return $row->id ? $row->id : '';
-            });
-            $table->addColumn('perusahaan_nama', function ($row) {
-                return $row->perusahaan ? $row->perusahaan->nama : '';
-            });
-
-            $table->addColumn('area_nama', function ($row) {
-                return $row->area ? $row->area->nama : '';
-            });
-
-            $table->editColumn('nama', function ($row) {
-                return $row->nama ? $row->nama : '';
-            });
-
-            $table->rawColumns(['actions', 'placeholder', 'perusahaan', 'area']);
-
-            return $table->make(true);
-        }
-
-        $perusahaans = Perusahaan::get();
-        $areas       = Area::get();
-
-        return view('admin.rekanans.index', compact('perusahaans', 'areas'));
+        return view('admin.rekanans.index', compact('rekanans'));
     }
 
     public function create()
