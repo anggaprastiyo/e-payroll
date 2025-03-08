@@ -42,7 +42,7 @@
                         </div>
                         <div class="form-group {{ $errors->has('presentase') ? 'has-error' : '' }}">
                             <label class="required" for="presentase">{{ trans('cruds.refBpj.fields.presentase') }}</label>
-                            <input class="form-control" type="number" name="presentase" id="presentase" value="{{ old('presentase', '') }}" step="0.01" required>
+                            <input class="form-control" type="number" name="presentase" id="presentase" value="{{ old('presentase', '0') }}" step="0.01" required>
                             @if($errors->has('presentase'))
                                 <span class="help-block" role="alert">{{ $errors->first('presentase') }}</span>
                             @endif

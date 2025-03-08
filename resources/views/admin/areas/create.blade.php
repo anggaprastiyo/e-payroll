@@ -21,7 +21,7 @@
                         </div>
                         <div class="form-group {{ $errors->has('umr') ? 'has-error' : '' }}">
                             <label class="required" for="umr">{{ trans('cruds.area.fields.umr') }}</label>
-                            <input class="form-control" type="number" name="umr" id="umr" value="{{ old('umr', '') }}" step="0.01" required>
+                            <input class="form-control" type="number" name="umr" id="umr" value="{{ old('umr', '0') }}" step="0.01" required>
                             @if($errors->has('umr'))
                                 <span class="help-block" role="alert">{{ $errors->first('umr') }}</span>
                             @endif
@@ -29,7 +29,7 @@
                         </div>
                         <div class="form-group {{ $errors->has('tunjangan_kemahalan') ? 'has-error' : '' }}">
                             <label for="tunjangan_kemahalan">{{ trans('cruds.area.fields.tunjangan_kemahalan') }}</label>
-                            <input class="form-control" type="number" name="tunjangan_kemahalan" id="tunjangan_kemahalan" value="{{ old('tunjangan_kemahalan', '') }}" step="0.01">
+                            <input class="form-control" type="number" name="tunjangan_kemahalan" id="tunjangan_kemahalan" value="{{ old('tunjangan_kemahalan', '0') }}" step="0.01">
                             @if($errors->has('tunjangan_kemahalan'))
                                 <span class="help-block" role="alert">{{ $errors->first('tunjangan_kemahalan') }}</span>
                             @endif
