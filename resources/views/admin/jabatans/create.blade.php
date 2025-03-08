@@ -102,7 +102,7 @@
                         </div>
                         <div class="form-group {{ $errors->has('tunjangan_kemahalan') ? 'has-error' : '' }}">
                             <label class="required" for="tunjangan_kemahalan">{{ trans('cruds.jabatan.fields.tunjangan_kemahalan') }}</label>
-                            <input class="form-control" type="number" name="tunjangan_kemahalan" id="tunjangan_kemahalan" value="{{ old('tunjangan_kemahalan', '') }}" step="0.01" required>
+                            <input class="form-control" type="number" name="tunjangan_kemahalan" id="tunjangan_kemahalan" value="{{ old('tunjangan_kemahalan', '0') }}" step="0.01" required>
                             @if($errors->has('tunjangan_kemahalan'))
                                 <span class="help-block" role="alert">{{ $errors->first('tunjangan_kemahalan') }}</span>
                             @endif
