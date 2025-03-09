@@ -43,19 +43,6 @@
                             @endif
                             <span class="help-block">{{ trans('cruds.gajiBulanan.fields.tanggal_helper') }}</span>
                         </div>
-                        <div class="form-group {{ $errors->has('status') ? 'has-error' : '' }}">
-                            <label>{{ trans('cruds.gajiBulanan.fields.status') }}</label>
-                            <select class="form-control" name="status" id="status">
-                                <option value disabled {{ old('status', null) === null ? 'selected' : '' }}>{{ trans('global.pleaseSelect') }}</option>
-                                @foreach(App\Models\GajiBulanan::STATUS_SELECT as $key => $label)
-                                    <option value="{{ $key }}" {{ old('status', '1') === (string) $key ? 'selected' : '' }}>{{ $label }}</option>
-                                @endforeach
-                            </select>
-                            @if($errors->has('status'))
-                                <span class="help-block" role="alert">{{ $errors->first('status') }}</span>
-                            @endif
-                            <span class="help-block">{{ trans('cruds.gajiBulanan.fields.status_helper') }}</span>
-                        </div>
                         <div class="form-group">
                             <button class="btn btn-danger" type="submit">
                                 {{ trans('global.save') }}
